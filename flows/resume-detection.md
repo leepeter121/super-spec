@@ -13,3 +13,12 @@ Run: `openspec status --change <name> --json`. Parse, then route by detected sta
 | `review.md` verdict = `NEEDS DESIGN UPDATE` | Recover flow (`flows/recover.md`) |
 
 Announce: `Resuming <name> at <phase>.`
+
+## Phase-entry hooks still run on resume
+
+Resuming into a phase means **entering that phase** — not skipping past its entry steps. Notably:
+
+- Resuming into Phase 4 runs the **Phase-4 entry sweep** (`phases/04-apply.md` section 0). The sweep is idempotent: a no-op when no superpowers artifacts/commits remain, and the right thing to do otherwise.
+- Resuming into Phase 5 dispatches the final-reviewer fresh (the prior dispatch's output is not preserved).
+
+Do not try to be clever and skip the entry steps "because we already ran them last time". Re-run them.

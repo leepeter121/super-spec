@@ -1,5 +1,91 @@
 # Phase 4 — Apply
 
+## 0. Phase-entry sweep — purge any superpowers artifacts (idempotent)
+
+Run this **once at Phase 4 entry, before the first Task iteration**. Idempotent — re-running on resume into Phase 4 mid-stream is a no-op when nothing is stale.
+
+This is the last opportunity for safe history rewrite: no implementation commit exists yet, so `git rebase --onto` cannot conflict on overlapping paths.
+
+### 0.1 File sweep
+
+```
+ls docs/superpowers/specs/ docs/superpowers/plans/ 2>/dev/null
+```
+
+If anything exists:
+
+```
+rm -rf docs/superpowers/specs/ docs/superpowers/plans/
+rmdir docs/superpowers 2>/dev/null  # only if empty
+```
+
+### 0.2 Determine baseline
+
+Baseline = the commit immediately **before** `openspec(<name>): propose`.
+
+```
+PROPOSE_HASH=$(git log --oneline --grep="openspec(<name>): propose" --format="%H" -n 1)
+BASELINE=$(git rev-parse "${PROPOSE_HASH}~1")
+```
+
+If `PROPOSE_HASH` is empty, halt and report (Phase 4 sweep should never run before Phase 2).
+
+### 0.3 Scan baseline..HEAD for rogue commits
+
+For each commit in `git log --format="%H" "$BASELINE"..HEAD`:
+
+```
+HASH=<this commit>
+PATHS=$(git show --name-only --format= "$HASH")
+```
+
+A commit is **rogue** if **every** path in `$PATHS` lies under `docs/superpowers/specs/` or `docs/superpowers/plans/`.
+
+Build the list of rogue hashes (oldest → newest order matters for the rebase).
+
+### 0.4 Drop rogue commits via rebase
+
+For each rogue hash (process oldest first):
+
+```
+git rebase --onto "${HASH}^" "$HASH" HEAD
+```
+
+This drops one commit and replays everything above it onto the parent. Zero conflict risk because no later commit touches `docs/superpowers/...` paths (any that did would itself be rogue and excluded from the replay set).
+
+After each rebase:
+- HEAD shifts; remaining rogue hashes from the original list become invalid
+- Re-scan with the updated `$BASELINE..HEAD` and repeat until no rogues remain
+
+### 0.5 Final verification
+
+```
+git log "$BASELINE"..HEAD --format="%H %s"
+ls docs/superpowers/ 2>/dev/null
+```
+
+Must show: zero `docs:` rogue subjects, no `docs/superpowers/` directory. If either fails, halt and report.
+
+### 0.6 Stash protection
+
+If `git status --porcelain` shows uncommitted tracked changes before the sweep, stash first:
+
+```
+git stash push --keep-index -m "super-spec phase-4-sweep"
+```
+
+Pop after the sweep:
+
+```
+git stash pop
+```
+
+(Untracked files unrelated to `docs/superpowers/` are left in place.)
+
+---
+
+## Task loop
+
 Loop over each Task in `tasks.md` that is not yet complete (`- [ ]` at the Task header level).
 
 For each Task, do steps 1 → 4 in order.
