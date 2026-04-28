@@ -19,6 +19,7 @@ Before running `openspec archive`, build the summary message that the archive co
   git log "$BASELINE"..HEAD --format="%h %s" --no-merges
   ```
   Exclude commits matching `openspec(<name>):` (those are workflow scaffolding, not implementation). Keep `feat(...)`, `fix(...)`, `refactor(...)`, etc.
+- Count implementation commits and total tasks (from `tasks.md` final state).
 - Read `openspec/changes/<name>/review.md` to confirm verdict (should be `APPROVED`).
 
 ### 1b. Build the message (HARD CAP: 15 lines total, including blanks)
@@ -36,6 +37,8 @@ Key changes:
 - <bullet summarizing key implementation area 1>
 - <bullet summarizing key implementation area 2>
 - <bullet summarizing key implementation area 3>
+
+Mode: <TDD|Simple> · Tasks: <N> · Commits: <M> · Review: APPROVED
 ```
 
 Bullet rules:
@@ -43,7 +46,7 @@ Bullet rules:
 - Group implementation commits by component/file area, not 1:1 mapping. The reader wants "what shipped", not the commit graph.
 - Lead each bullet with a verb ("add", "wire", "refactor", "fix").
 
-If the assembled message exceeds 15 lines, tighten the What/Why/bullets.
+If the assembled message exceeds 15 lines, tighten the What/Why/bullets — do NOT drop the trailing `Mode: ...` line.
 
 Store the final message as `{COMMIT_MESSAGE}` for the next step.
 
