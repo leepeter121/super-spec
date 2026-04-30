@@ -114,16 +114,16 @@ Variables:
 
 The implementer is contractually required to return one line: `Done: <commit_hash>` or `Blocked: <reason>`.
 
-## 2. Dispatch the spec-reviewer subagent
+## 2. Dispatch the task-reviewer subagent
 
-Use the **Agent** tool. Read `prompts/spec-reviewer.md` and substitute:
+Use the **Agent** tool. Read `prompts/task-reviewer.md` and substitute:
 - `{COMMIT_HASH}`: the hash from the implementer's response
 - `{DESIGN_PATH}`: `openspec/changes/<name>/design.md`
 - `{TASK_BODY}`: the same Task section
 
 **Model:** `claude-sonnet-4-6`
 
-**Forbidden:** the implementer's narrative; other Tasks' content; quality-reviewer outputs.
+**Forbidden:** the implementer's narrative; other Tasks' content.
 
 The reviewer returns `PASS` or `FAIL\n- <issues>`.
 
@@ -133,18 +133,6 @@ After the **3rd consecutive FAIL** on the same Task, **pause** the workflow:
 - Output the latest reviewer report to the user
 - Ask: "Reviewer has failed 3 times. How would you like to proceed? (e.g., adjust the design, skip this task, manually intervene)"
 - Wait for user direction
-
-## 3. Dispatch the quality-reviewer subagent
-
-Use the **Agent** tool. Read `prompts/quality-reviewer.md` and substitute:
-- `{COMMIT_HASH}`
-- `{TASK_BODY}` (for context only)
-
-**Model:** `claude-sonnet-4-6`
-
-**Forbidden:** `design.md` (quality should not depend on design intent); the implementer's narrative; the spec-reviewer report.
-
-Same FAIL / retry / pause-after-3 behavior as spec-reviewer.
 
 ## 4. Mark Task complete
 
