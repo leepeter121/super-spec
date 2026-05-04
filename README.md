@@ -57,7 +57,8 @@ super-spec/
 
 | Subagent | Model |
 |---|---|
-| implementer | inherit (parent's model) |
+| implementer (TDD mode) | Sonnet (`claude-sonnet-4-6`) |
+| implementer (Simple mode) | inherit (parent's model) |
 | spec-reviewer | Sonnet (`claude-sonnet-4-6`) |
 | code-quality-reviewer | Sonnet (`claude-sonnet-4-6`) |
 | final-reviewer | Opus (`claude-opus-4-7`) |

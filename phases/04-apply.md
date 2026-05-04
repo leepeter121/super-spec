@@ -103,7 +103,7 @@ Variables:
 - `{MODE}`: `TDD` or `Simple`
 - `{RELEVANT_FILES}`: list of existing files this Task touches (extract from the Task body's `**Files:**` section)
 
-**Model:** inherit (omit the `model` parameter on the Agent call).
+**Model:** `claude-sonnet-4-6` if `{MODE}` is `TDD`; otherwise inherit (omit the `model` parameter).
 
 **Forbidden in this prompt** (do not include):
 - Brainstorming conversation
