@@ -25,18 +25,45 @@ and git commits. Apply these overrides to your default behavior:
    subagent-driven-development or executing-plans choices. Do NOT invoke any
    sub-skill. Return control to the super-spec orchestrator after writing tasks.md.
 
-All other plan-writing behavior (file structure, bite-sized tasks, no placeholders,
-self-review) runs as normal.
+4. Task granularity is governed by the dispatch-cost model below — it OVERRIDES
+   the writing-plans skill's "bite-sized tasks" default. Read it before drafting
+   tasks.md.
+
+All other plan-writing behavior (file structure, no placeholders, self-review)
+runs as normal.
 ```
 
-## Per-mode task structure (append to the Skill `args` after the override block)
+## Task granularity — dispatch-cost model (REQUIRED reading before drafting tasks)
+
+A Task is **not** a human-onboarding chunk; it is **one full subagent dispatch + one reviewer dispatch + one git commit**. Each Task therefore carries a fixed overhead of ~15–25K tokens of cold-start context (preamble + role prompt + design.md + relevant files re-read by a fresh subagent). To justify that cost, a Task must contain enough substantive, reviewable work — otherwise you are paying dispatch overhead for trivial changes.
+
+**Merge Tasks that share any of these properties:**
+- Pure scaffolding (resources, manifest entries, dependency declarations, theme styles, dimen/string additions) — bundle into a single "setup" Task regardless of how many files they touch.
+- Files that cannot independently compile or be verified without each other (e.g. ViewBinding consumers + their layout XMLs + the Activity that wires them together — splitting them only creates "build will fail until next Task" pseudo-checkpoints, which produce no reviewable signal).
+- Single-file additions under ~50 lines that exist solely to support another Task — inline them into the consuming Task instead of giving them their own dispatch.
+- Sequential edits to the same file or same logical concern with no independent testability between them.
+
+**Keep Tasks separate when:**
+- They cross independent layers/modules and each layer can be reviewed on its own.
+- One contains genuine architectural decisions that warrant a focused review pass.
+- One is a smoke/integration test that meaningfully gates the rest.
+
+**Default target:** 3–6 Tasks for a feature change. **More than 8 Tasks is a smell** — re-examine whether adjacent Tasks are really independent dispatch units or just "steps a human might list."
+
+**Verification placement:** within a Task, full `assembleRelease` / full test-suite runs go in the **final sub-step only**. Per-sub-step build verifications are wasteful (each remote build is minutes; intermediate states often can't compile anyway). Keep per-sub-step verifications only for cheap local checks (`Select-String`, file count, single targeted unit-test class).
+
+**Generic merge pattern:**
+- Over-fragmented draft: `add dependency` / `copy resource files` / `add string+dimen entries` / `add theme style` / `register in manifest` / `add base class` / `port file A` / `port file B` / `port layout A` / `port layout B` / `wire entry point` / `add smoke test` / `final build verify`
+- Consolidated: 1 setup Task (deps + resources + theme + manifest) → 1 shared-infra Task (base class only if non-trivial; otherwise inline) → 1 feature Task (all interdependent code + layouts + entry point that must compile together) → 1 verify Task (smoke test + final build + manual checklist)
+
+## Per-mode sub-step structure (append to the Skill `args` after the override block)
 
 - Read the design from `openspec/changes/<name>/design.md`
 - Read the mode from `openspec/changes/<name>/proposal.md`'s `## Mode` section
 - For **TDD** mode: each Task includes explicit "write failing test → run to confirm fail → implement minimal code → run to confirm pass → commit" sub-steps
-- For **Simple** mode: omit test-writing sub-steps; include "verify existing tests still pass" as a final sub-step in each Task
+- For **Simple** mode: omit test-writing sub-steps; include "verify existing tests still pass" as a final sub-step **of the Task** (not after every sub-step)
 
-Each Task is a unit of subagent work (~15min – 2hr). Sub-steps within a Task are 2–5 minute atomic actions with `- [ ]` checkboxes.
+Sub-steps within a Task are 2–5 minute atomic actions with `- [ ]` checkboxes. A Task itself should be sized so that the substantive work clears the dispatch-overhead break-even — typically 30min – 2hr of equivalent implementer work, not 5min.
 
 ## Pre-commit absorb — neutralize any superpowers plan residue
 
