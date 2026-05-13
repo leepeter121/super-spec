@@ -22,3 +22,7 @@ Resuming into a phase means **entering that phase** — not skipping past its en
 - Resuming into Phase 5 dispatches the final-reviewer fresh (the prior dispatch's output is not preserved).
 
 Do not try to be clever and skip the entry steps "because we already ran them last time". Re-run them.
+
+## `review.md` may be uncommitted at Phase 6 resume
+
+By design, Phase 5 leaves `review.md` uncommitted (it is folded into the archive commit). When `openspec status` routes a resume to Phase 6 ("`review.md` verdict = `APPROVED`, not yet archived"), the file may exist only in the working tree, not yet in git history. This is expected — proceed into Phase 6 normally.

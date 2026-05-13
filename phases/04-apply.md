@@ -1,10 +1,10 @@
 # Phase 4 — Apply
 
-## 0. Phase-entry sweep — purge any superpowers artifacts (idempotent)
+## 0. Phase-entry sweep — purge superpowers artifacts (idempotent)
 
-Run this **once at Phase 4 entry, before the first Task iteration**. Idempotent — re-running on resume into Phase 4 mid-stream is a no-op when nothing is stale.
+Run **once at Phase 4 entry, before the first Task iteration**. Idempotent on resume. This is the last safe window for history rewrite — no implementation commit exists yet, so `git rebase --onto` cannot conflict on overlapping paths.
 
-This is the last opportunity for safe history rewrite: no implementation commit exists yet, so `git rebase --onto` cannot conflict on overlapping paths.
+If `git status --porcelain` shows uncommitted tracked changes, `git stash push --keep-index -m "super-spec phase-4-sweep"` first; `git stash pop` after the sweep.
 
 ### 0.1 File sweep
 
@@ -12,75 +12,36 @@ This is the last opportunity for safe history rewrite: no implementation commit 
 ls docs/superpowers/specs/ docs/superpowers/plans/ 2>/dev/null
 ```
 
-If anything exists:
-
-```
-rm -rf docs/superpowers/specs/ docs/superpowers/plans/
-rmdir docs/superpowers 2>/dev/null  # only if empty
-```
+If anything exists: `rm -rf docs/superpowers/specs/ docs/superpowers/plans/` then `rmdir docs/superpowers 2>/dev/null` (only if empty).
 
 ### 0.2 Determine baseline
 
-Baseline = the commit immediately **before** `openspec(<name>): propose`.
+Baseline = the commit immediately before `openspec(<name>): propose`:
 
 ```
 PROPOSE_HASH=$(git log --oneline --grep="openspec(<name>): propose" --format="%H" -n 1)
 BASELINE=$(git rev-parse "${PROPOSE_HASH}~1")
 ```
 
-If `PROPOSE_HASH` is empty, halt and report (Phase 4 sweep should never run before Phase 2).
+If `PROPOSE_HASH` is empty, halt and report (sweep should never run before Phase 2).
 
 ### 0.3 Scan baseline..HEAD for rogue commits
 
-For each commit in `git log --format="%H" "$BASELINE"..HEAD`:
-
-```
-HASH=<this commit>
-PATHS=$(git show --name-only --format= "$HASH")
-```
-
-A commit is **rogue** if **every** path in `$PATHS` lies under `docs/superpowers/specs/` or `docs/superpowers/plans/`.
-
-Build the list of rogue hashes (oldest → newest order matters for the rebase).
+For each commit in `git log --format="%H" "$BASELINE"..HEAD`, mark it **rogue** if **every** path under `git show --name-only --format= "$HASH"` lies inside `docs/superpowers/specs/` or `docs/superpowers/plans/`. Build the rogue list oldest → newest.
 
 ### 0.4 Drop rogue commits via rebase
 
-For each rogue hash (process oldest first):
+For each rogue hash (oldest first):
 
 ```
 git rebase --onto "${HASH}^" "$HASH" HEAD
 ```
 
-This drops one commit and replays everything above it onto the parent. Zero conflict risk because no later commit touches `docs/superpowers/...` paths (any that did would itself be rogue and excluded from the replay set).
-
-After each rebase:
-- HEAD shifts; remaining rogue hashes from the original list become invalid
-- Re-scan with the updated `$BASELINE..HEAD` and repeat until no rogues remain
+Drops one commit and replays the rest onto its parent. No conflict risk: any later commit touching `docs/superpowers/...` would itself be rogue and excluded from the replay set. After each rebase HEAD shifts, so re-scan `$BASELINE..HEAD` and repeat until no rogues remain.
 
 ### 0.5 Final verification
 
-```
-git log "$BASELINE"..HEAD --format="%H %s"
-ls docs/superpowers/ 2>/dev/null
-```
-
-Must show: zero `docs:` rogue subjects, no `docs/superpowers/` directory. If either fails, halt and report.
-
-### 0.6 Stash protection
-
-If `git status --porcelain` shows uncommitted tracked changes before the sweep, stash first:
-
-```
-git stash push --keep-index -m "super-spec phase-4-sweep"
-```
-
-Pop after the sweep:
-
-```
-git stash pop
-```
-
-(Untracked files unrelated to `docs/superpowers/` are left in place.)
+`git log "$BASELINE"..HEAD --format="%H %s"` and `ls docs/superpowers/ 2>/dev/null` must show zero `docs:` rogue subjects and no `docs/superpowers/` directory. Otherwise halt and report.
 
 ---
 
@@ -133,7 +94,7 @@ The reviewer returns one of:
 
 ### Severity-based routing
 
-- **No `[Critical]` and no `[Important]`** → Task passes. Move to step 4. If the reviewer surfaced any `[Minor]` items, record them per "Recording Minor advisories".
+- **No `[Critical]` and no `[Important]`** → Task passes. If the reviewer surfaced any `[Minor]` items, record them per "Recording Minor advisories", then proceed to step 3 (mark complete) and step 4 (fold into the implementer commit).
 - **Any `[Critical]` or `[Important]`** → re-dispatch the implementer (step 1) with the **full reviewer output** (including any `[Minor]` items so the implementer can address them opportunistically) appended under a `## Previous review failed with these issues` section. Track the failure count.
 
 The implementer is required to address every `[Critical]` and `[Important]` issue. `[Minor]` items are advisory — addressing them is encouraged but not gating.
@@ -149,11 +110,22 @@ After the **3rd consecutive FAIL** on the same Task, **pause** the workflow:
 - Ask: "Reviewer has failed 3 times. How would you like to proceed? (e.g., adjust the design, skip this task, manually intervene)"
 - Wait for user direction
 
-## 4. Mark Task complete
+## 3. Mark Task complete
 
 Use the Edit tool to flip `- [ ]` → `- [x]` for:
 - Each sub-step under this Task (if not already done by the implementer)
 - The Task header itself
+
+## 4. Fold tasks.md into the implementer commit
+
+If `tasks.md` has uncommitted changes after steps 2–3, **amend them into the implementer's feat commit**. Do NOT create a separate `openspec(<name>): record ...` commit. Skip this step if `git status --porcelain openspec/changes/<name>/tasks.md` is empty.
+
+Delegate to a haiku Agent subagent. Prompt must contain:
+- Opening: `你是被主 session 委派的子代理，可以直接用 Bash 執行 git 命令，不需要再往下委派。`
+- Commands: `git add openspec/changes/<name>/tasks.md && git commit --amend --no-edit`
+- On failure: report stderr verbatim and halt; no `restore` / `reset --hard` / hook-bypass recovery.
+
+Safe to amend: the task-reviewer's verdict is already in; no downstream step references the pre-amend hash.
 
 ## 5. Loop
 

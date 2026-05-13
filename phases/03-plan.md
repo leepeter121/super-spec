@@ -4,36 +4,29 @@ Invoke `superpowers:writing-plans` via the Skill tool.
 
 ## ORCHESTRATOR OVERRIDES — include verbatim in the Skill `args`
 
-Prepend the following block to the Skill `args` (above any other instructions). These overrides take precedence over the writing-plans SKILL.md defaults — the writing-plans skill itself documents that user/orchestrator preferences for plan location override its defaults.
+Prepend the following block to the Skill `args` (above any other instructions). These take precedence over writing-plans' defaults.
 
 ```
 ORCHESTRATOR OVERRIDES (super-spec skill, Phase 3):
 
-You are being invoked from the super-spec workflow, which owns all artifact paths
-and git commits. Apply these overrides to your default behavior:
+You are invoked from the super-spec workflow, which owns all artifact paths and
+git commits. Apply these overrides:
 
-1. Plan target path: write the plan DIRECTLY to
-   `openspec/changes/<name>/tasks.md`
-   Do NOT write to docs/superpowers/plans/. Do NOT write any auxiliary file in that
-   directory. The header line about `docs/superpowers/plans/<filename>.md` does not
-   apply here.
+1. Plan target path: write the plan DIRECTLY to `openspec/changes/<name>/tasks.md`.
+   Do NOT write to `docs/superpowers/plans/` or any auxiliary file there. The
+   default header line about `docs/superpowers/plans/<filename>.md` does not apply.
 
-2. Do NOT run `git add`, `git commit`, or any other git command that mutates state.
-   The orchestrator owns all commits.
+2. Do NOT run `git add` / `git commit` / any state-mutating git command. The
+   orchestrator owns all commits.
 
-3. **HARD STOP after self-review — NON-NEGOTIABLE:** After writing tasks.md and
-   completing the self-review, output exactly this one line and stop:
-
+3. HARD STOP after self-review: output exactly this one line and stop —
    `tasks.md written — returning control to super-spec orchestrator`
+   No questions, no choices, no sub-skill invocation, no mention of
+   "Subagent-Driven" or "Inline Execution". The "Execution Handoff" section in
+   writing-plans is suppressed — treat it as if it does not exist.
 
-   Do NOT ask any question. Do NOT output any choices. Do NOT mention
-   "Subagent-Driven" or "Inline Execution". Do NOT invoke any sub-skill.
-   The entire "Execution Handoff" section in the writing-plans skill is suppressed
-   by this orchestrator override — treat it as if it does not exist.
-
-4. Task granularity is governed by the dispatch-cost model below — it OVERRIDES
-   the writing-plans skill's "bite-sized tasks" default. Read it before drafting
-   tasks.md.
+4. Task granularity is governed by the dispatch-cost model below; it OVERRIDES
+   writing-plans' "bite-sized tasks" default. Read it before drafting tasks.md.
 
 All other plan-writing behavior (file structure, no placeholders, self-review)
 runs as normal.
@@ -41,26 +34,26 @@ runs as normal.
 
 ## Task granularity — dispatch-cost model (REQUIRED reading before drafting tasks)
 
-A Task is **not** a human-onboarding chunk; it is **one full subagent dispatch + one reviewer dispatch + one git commit**. Each Task therefore carries a fixed overhead of ~15–25K tokens of cold-start context (preamble + role prompt + design.md + relevant files re-read by a fresh subagent). To justify that cost, a Task must contain enough substantive, reviewable work — otherwise you are paying dispatch overhead for trivial changes.
+A Task = **one implementer dispatch + one reviewer dispatch + one commit**. Each carries ~15–25K tokens of cold-start overhead (preamble + role prompt + design.md + files re-read by a fresh subagent). The Task's substantive work must justify that overhead, or you are paying dispatch cost for trivial changes.
 
-**Merge Tasks that share any of these properties:**
-- Pure scaffolding (resources, manifest entries, dependency declarations, theme styles, dimen/string additions) — bundle into a single "setup" Task regardless of how many files they touch.
-- Files that cannot independently compile or be verified without each other (e.g. ViewBinding consumers + their layout XMLs + the Activity that wires them together — splitting them only creates "build will fail until next Task" pseudo-checkpoints, which produce no reviewable signal).
-- Single-file additions under ~50 lines that exist solely to support another Task — inline them into the consuming Task instead of giving them their own dispatch.
-- Sequential edits to the same file or same logical concern with no independent testability between them.
+**Merge Tasks when any of these hold:**
+- Pure scaffolding (resources, manifest entries, dependency declarations, theme/styles/dimens/strings) — bundle as one "setup" Task.
+- Files that cannot independently compile or be verified without each other (e.g., ViewBinding consumers + their layouts + the Activity wiring them) — splitting yields "build fails until next Task" pseudo-checkpoints with no reviewable signal.
+- Single-file additions under ~50 lines that only support another Task — inline into the consuming Task.
+- Sequential edits to the same file/concern with no independent testability between them.
 
 **Keep Tasks separate when:**
-- They cross independent layers/modules and each layer can be reviewed on its own.
-- One contains genuine architectural decisions that warrant a focused review pass.
+- They cross independent layers/modules and each layer reviews on its own.
+- One contains a genuine architectural decision worth a focused review pass.
 - One is a smoke/integration test that meaningfully gates the rest.
 
-**Default target:** 3–6 Tasks for a feature change. **More than 8 Tasks is a smell** — re-examine whether adjacent Tasks are really independent dispatch units or just "steps a human might list."
+**Target:** 3–6 Tasks for a feature change; **> 8 Tasks is a smell** — re-examine whether adjacent Tasks are really independent dispatch units.
 
-**Verification placement:** within a Task, full `assembleRelease` / full test-suite runs go in the **final sub-step only**. Per-sub-step build verifications are wasteful (each remote build is minutes; intermediate states often can't compile anyway). Keep per-sub-step verifications only for cheap local checks (`Select-String`, file count, single targeted unit-test class).
+**Verification placement:** full `assembleRelease` / test-suite runs go in the Task's **final sub-step only** (remote builds take minutes; intermediate states often can't compile). Per-sub-step verifications stay only for cheap local checks (`Select-String`, file count, single targeted unit test).
 
-**Generic merge pattern:**
-- Over-fragmented draft: `add dependency` / `copy resource files` / `add string+dimen entries` / `add theme style` / `register in manifest` / `add base class` / `port file A` / `port file B` / `port layout A` / `port layout B` / `wire entry point` / `add smoke test` / `final build verify`
-- Consolidated: 1 setup Task (deps + resources + theme + manifest) → 1 shared-infra Task (base class only if non-trivial; otherwise inline) → 1 feature Task (all interdependent code + layouts + entry point that must compile together) → 1 verify Task (smoke test + final build + manual checklist)
+**Merge example:**
+- Over-fragmented: `add dependency` / `copy resources` / `add strings+dimens` / `add theme` / `register in manifest` / `add base class` / `port file A` / `port file B` / `port layout A` / `port layout B` / `wire entry point` / `add smoke test` / `final verify`
+- Consolidated: setup Task (deps + resources + theme + manifest) → shared-infra Task (only if non-trivial) → feature Task (all interdependent code + layouts + entry point) → verify Task (smoke test + final build).
 
 ## Per-mode sub-step structure (append to the Skill `args` after the override block)
 
@@ -71,17 +64,11 @@ A Task is **not** a human-onboarding chunk; it is **one full subagent dispatch +
 
 Sub-steps within a Task are 2–5 minute atomic actions with `- [ ]` checkboxes. A Task itself should be sized so that the substantive work clears the dispatch-overhead break-even — typically 30min – 2hr of equivalent implementer work, not 5min.
 
-## Pre-commit absorb — neutralize any superpowers plan residue
+## Pre-commit absorb — neutralize superpowers plan residue
 
-After `writing-plans` returns and before staging `tasks.md`, deal with any residue. Each step is a no-op if its trigger is absent.
+After `writing-plans` returns and before staging `tasks.md`, clean any residue. Each step is a no-op if its trigger is absent. **All git commands in this section must be delegated to a haiku Agent subagent** — describe the full conditional logic in the subagent prompt and have it report the result.
 
-**All git commands in this section must be delegated to an Agent subagent (model: haiku).** Per project rules, git operations in the main session are forbidden. Describe the full conditional logic below in the subagent prompt so it performs the absorb and reports the result.
-
-### A. Rogue commit at HEAD
-
-Inspect HEAD: `git log -1 --format="%H %s"` then `git show --name-only --format= HEAD`.
-
-If HEAD's diff touches **only** paths under `docs/superpowers/plans/` (no other paths), it is a rogue writing-plans commit. Absorb it:
+**A. Rogue commit at HEAD.** Check `git show --name-only --format= HEAD`. If every path lies under `docs/superpowers/plans/`:
 
 ```
 PARENT=$(git rev-parse HEAD~1)
@@ -90,44 +77,26 @@ git reset HEAD -- docs/superpowers/plans/
 rm -rf docs/superpowers/plans/
 ```
 
-If the rogue commit also touched files **outside** `docs/superpowers/plans/`, do NOT absorb — halt and report.
+If the rogue commit also touched files outside `docs/superpowers/plans/`, do NOT absorb — halt and report.
 
-### B. Staged but uncommitted residue
+**B. Staged residue.** If `git diff --cached --name-only docs/superpowers/plans/` is non-empty: `git reset HEAD -- docs/superpowers/plans/ && rm -rf docs/superpowers/plans/`.
 
-Run `git diff --cached --name-only docs/superpowers/plans/`.
+**C. Untracked residue.** If `docs/superpowers/plans/` is non-empty: `rm -rf docs/superpowers/plans/`.
 
-If non-empty:
+**D. Empty parent cleanup.** `rmdir docs/superpowers 2>/dev/null`.
 
-```
-git reset HEAD -- docs/superpowers/plans/
-rm -rf docs/superpowers/plans/
-```
-
-### C. Untracked file in working tree
-
-Check whether `docs/superpowers/plans/` exists and is non-empty.
-
-If non-empty: `rm -rf docs/superpowers/plans/`
-
-### D. Empty parent directory cleanup
-
-`rmdir docs/superpowers 2>/dev/null` (only succeeds if empty)
-
-After A–D, verify that neither `git status --porcelain docs/superpowers/` nor `git log -1 --format=%s` reference `docs/superpowers/plans/`. If either still does, halt and report.
+After A–D, neither `git status --porcelain docs/superpowers/` nor `git log -1 --format=%s` may reference `docs/superpowers/plans/`. Otherwise halt and report.
 
 ## Commit
 
-**Delegate to an Agent subagent (model: haiku).** Instruct it to stage and commit:
+Delegate to a haiku Agent subagent. Stage and commit:
 
 - `openspec/changes/<name>/proposal.md`
 - `openspec/changes/<name>/design.md`
 - `openspec/changes/<name>/tasks.md`
 
-Commit message:
-```
-openspec(<name>): planning
-```
+Message: `openspec(<name>): planning`
 
-This is the only commit produced by Phases 2–3 combined. If `proposal.md` or `design.md` were already committed in a prior session (e.g., resuming Phase 3 after a previous run committed Phase 2 separately under the old workflow), only `tasks.md` will be staged — that is fine; the prior commit stays in history.
+This is the only commit from Phases 2–3 combined. If `proposal.md` or `design.md` were already committed in a prior session, only `tasks.md` stages — fine; the prior commit stays.
 
 → Continue to Phase 4.

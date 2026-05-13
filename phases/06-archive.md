@@ -4,23 +4,18 @@ Only enter when the user gives an explicit "archive" instruction after `APPROVED
 
 ## 1. Compose the archive commit message
 
-Before running `openspec archive`, build the summary message that the archive commit will carry. This message is the PR-ready record of the whole change.
+Build the PR-ready summary that the archive commit will carry. Do this before running `openspec archive`.
 
 ### 1a. Gather inputs
 
-- Read `openspec/changes/<name>/proposal.md` — extract `## What` and `## Why` content, plus `## Mode`.
-- Determine baseline (commit immediately before `openspec(<name>): propose`):
+- From `proposal.md`: extract `## What`, `## Why`, `## Mode`.
+- Baseline = parent of the `openspec(<name>): propose` commit:
   ```
-  PROPOSE_HASH=$(git log --oneline --grep="openspec(<name>): propose" --format="%H" -n 1)
-  BASELINE=$(git rev-parse "${PROPOSE_HASH}~1")
+  BASELINE=$(git rev-parse "$(git log --grep='openspec(<name>): propose' --format='%H' -n 1)~1")
   ```
-- List implementation commits between baseline and HEAD, filtered to substantive work:
-  ```
-  git log "$BASELINE"..HEAD --format="%h %s" --no-merges
-  ```
-  Exclude commits matching `openspec(<name>):` (those are workflow scaffolding, not implementation). Keep `feat(...)`, `fix(...)`, `refactor(...)`, etc.
-- Count implementation commits and total tasks (from `tasks.md` final state).
-- Read `openspec/changes/<name>/review.md` to confirm verdict (should be `APPROVED`).
+- Implementation commits: `git log "$BASELINE"..HEAD --format='%h %s' --no-merges`, excluding `openspec(<name>):` scaffolding (keep `feat`/`fix`/`refactor`/etc.).
+- Count implementation commits and tasks (from final `tasks.md`).
+- Confirm `review.md` verdict = `APPROVED`.
 
 ### 1b. Build the message (HARD CAP: 15 lines total, including blanks)
 
@@ -41,12 +36,7 @@ Key changes:
 Mode: <TDD|Simple> · Tasks: <N> · Commits: <M> · Review: APPROVED
 ```
 
-Bullet rules:
-- 3 bullets ideal, max 4. Each bullet ≤ 80 chars.
-- Group implementation commits by component/file area, not 1:1 mapping. The reader wants "what shipped", not the commit graph.
-- Lead each bullet with a verb ("add", "wire", "refactor", "fix").
-
-If the assembled message exceeds 15 lines, tighten the What/Why/bullets — do NOT drop the trailing `Mode: ...` line.
+Bullet rules: 3 ideal (max 4), ≤ 80 chars each, lead with a verb, group by area not 1:1 to commits. If the message exceeds the 15-line cap, tighten What/Why/bullets — never drop the `Mode: ...` line.
 
 Store the final message as `{COMMIT_MESSAGE}` for the next step.
 
@@ -56,7 +46,7 @@ Store the final message as `{COMMIT_MESSAGE}` for the next step.
 openspec archive <name>
 ```
 
-This moves `openspec/changes/<name>/` into `openspec/changes/archive/` and may update `openspec/specs/`.
+This moves `openspec/changes/<name>/` into `openspec/changes/archive/` and may update `openspec/specs/`. The uncommitted `review.md` from Phase 5 gets moved along and is absorbed by step 3's `git add openspec/`.
 
 ## 3. Dispatch the archive-committer subagent
 
@@ -66,7 +56,7 @@ Use the **Agent** tool. Read `prompts/archive-committer.md` and substitute:
 
 **Model:** `claude-haiku-4-5-20251001`
 
-**Forbidden:** any phase conversation; reviewer reports. (`proposal.md` content is now allowed because it has been distilled into `{COMMIT_MESSAGE}` and the subagent only treats it as opaque text.)
+**Forbidden:** any phase conversation; reviewer reports. (`proposal.md` is allowed — already distilled into `{COMMIT_MESSAGE}`.)
 
 The subagent stages the archive file moves with `git add openspec/` and commits using `{COMMIT_MESSAGE}` verbatim.
 
