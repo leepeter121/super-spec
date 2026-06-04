@@ -61,10 +61,13 @@ Variables:
 - `{TASK_NUMBER}`: Task index (e.g., 3)
 - `{TASK_BODY}`: This Task's section from tasks.md only (header + sub-steps)
 - `{DESIGN_PATH}`: `openspec/changes/<name>/design.md`
-- `{MODE}`: `TDD` or `Simple`
+- `{MODE}`: `TDD` or `Simple` — the **discipline** only. Strip any model qualifier from `proposal.md`'s `## Mode` line: both `TDD (Sonnet)` and `TDD (Opus)` map to `TDD` here.
 - `{RELEVANT_FILES}`: list of existing files this Task touches (extract from the Task body's `**Files:**` section)
 
-**Model:** `claude-sonnet-4-6` if `{MODE}` is `TDD`; otherwise inherit (omit the `model` parameter).
+**Model:** read the parenthetical on `proposal.md`'s `## Mode` line:
+- `TDD (Sonnet)` → `claude-sonnet-4-6`
+- `TDD (Opus)` → `claude-opus-4-7`
+- `Simple` → inherit (omit the `model` parameter)
 
 **Forbidden in this prompt** (do not include):
 - Brainstorming conversation

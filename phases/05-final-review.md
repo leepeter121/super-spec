@@ -13,7 +13,7 @@ Use the **Agent** tool. Read `prompts/final-reviewer.md` and substitute:
 
 **Forbidden:** per-task reviewer reports; implementer narratives; the brainstorming conversation.
 
-The prompt instructs the reviewer to invoke `/simplify` skill internally for cross-task DRY analysis.
+The prompt instructs the reviewer to invoke the `/code-review` skill (report-only, e.g. `/code-review high`) internally for correctness, cross-task DRY, and efficiency analysis.
 
 The reviewer returns one of:
 - `VERDICT: APPROVED` + summary + optional `## Notes` of `[Minor]` items

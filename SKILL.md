@@ -74,7 +74,7 @@ When a phase file tells you to write an artifact, Read the matching template fir
 
 These deliver the actual isolation between phases. Apply to every Phase-4 dispatch and to Phase 5.
 
-1. **Subagent dispatch always uses the Agent tool, never Skill.** Skill runs in the current context (no isolation); Agent spawns a fresh context. Skill is only for invoking other skills' interactive logic inside the orchestrator (e.g., `superpowers:brainstorming`, `superpowers:writing-plans`, `/simplify` inside the final-reviewer).
+1. **Subagent dispatch always uses the Agent tool, never Skill.** Skill runs in the current context (no isolation); Agent spawns a fresh context. Skill is only for invoking other skills' interactive logic inside the orchestrator (e.g., `superpowers:brainstorming`, `superpowers:writing-plans`, `/code-review` inside the final-reviewer).
 2. **Build every subagent prompt from `prompts/*.md`.** Read at dispatch time, substitute variables, pass verbatim. No freehand. No extra context unless a `{...}` placeholder invites it. The shared `prompts/_isolation-preamble.md` is referenced by every per-role prompt — do not strip it.
 3. **Reviewers see git, not implementer narrative.** Implementer returns `Done: <commit_hash>`; reviewer prompts contain only the hash and fetch the diff themselves. Never paste implementer narrative into a reviewer prompt.
 4. **Per-task fresh subagent.** Never reuse a subagent across Tasks — fresh implementer + reviewer per dispatch.

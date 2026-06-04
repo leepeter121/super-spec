@@ -27,7 +27,7 @@ Required on every machine that runs this skill:
 | `openspec` CLI | `npm i -g @openspec/cli` (see https://openspec.dev) |
 | `superpowers` plugin | Claude Code plugin manager — provides `superpowers:brainstorming`, `superpowers:writing-plans`, etc. |
 | `opsx` plugin | Claude Code plugin manager — provides openspec CLI skill wrappers |
-| `simplify` skill | Built-in to Claude Code — no install needed |
+| `code-review` skill | Built-in to Claude Code — no install needed |
 
 The skill checks `openspec --version` at startup and halts with install instructions if missing. Plugin presence is **not** pre-checked; missing plugins surface as a clear error when their skill is first invoked.
 
@@ -57,7 +57,8 @@ super-spec/
 
 | Subagent | Model |
 |---|---|
-| implementer (TDD mode) | Sonnet (`claude-sonnet-4-6`) |
+| implementer (TDD (Sonnet) mode) | Sonnet (`claude-sonnet-4-6`) |
+| implementer (TDD (Opus) mode) | Opus (`claude-opus-4-7`) |
 | implementer (Simple mode) | inherit (parent's model) |
 | spec-reviewer | Sonnet (`claude-sonnet-4-6`) |
 | code-quality-reviewer | Sonnet (`claude-sonnet-4-6`) |
@@ -77,10 +78,10 @@ super-spec/
 | Phase | What happens | Who writes |
 |---|---|---|
 | 1. Brainstorm | Pure dialogue via `superpowers:brainstorming`. No files written. | (none) |
-| 2. Propose | HARD-GATE: TDD or Simple? Then `openspec new change`, write `proposal.md` + `design.md`. | orchestrator |
+| 2. Propose | HARD-GATE: TDD (Sonnet) / TDD (Opus) / Simple? Then `openspec new change`, write `proposal.md` + `design.md`. | orchestrator |
 | 3. Plan | Invoke `superpowers:writing-plans`, write `tasks.md` with TDD or Simple sub-steps. | orchestrator |
 | 4. Apply | Loop per Task: implementer → spec-reviewer → quality-reviewer. Each is a fresh subagent. | implementer subagent |
-| 5. Final Review | One Opus subagent reviews the whole change holistically; invokes `/simplify` for cross-task DRY. Writes `review.md`. | final-reviewer subagent |
+| 5. Final Review | One Opus subagent reviews the whole change holistically; invokes `/code-review` (report-only) for correctness + cross-task DRY. Writes `review.md`. | final-reviewer subagent |
 | 6. Archive | Only on explicit user instruction after `APPROVED`. `openspec archive` + Haiku subagent commits. STOP — no merge / push / PR. | archive-committer subagent |
 
 ## Recovery paths
