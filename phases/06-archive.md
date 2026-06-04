@@ -33,7 +33,7 @@ Key changes:
 - <bullet summarizing key implementation area 2>
 - <bullet summarizing key implementation area 3>
 
-Mode: <TDD|Simple> · Tasks: <N> · Commits: <M> · Review: APPROVED
+Mode: <TDD (Sonnet)|TDD (Opus)|Simple> · Tasks: <N> · Commits: <M> · Review: APPROVED
 ```
 
 Bullet rules: 3 ideal (max 4), ≤ 80 chars each, lead with a verb, group by area not 1:1 to commits. If the message exceeds the 15-line cap, tighten What/Why/bullets — never drop the `Mode: ...` line.

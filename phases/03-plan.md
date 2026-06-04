@@ -19,11 +19,16 @@ git commits. Apply these overrides:
 2. Do NOT run `git add` / `git commit` / any state-mutating git command. The
    orchestrator owns all commits.
 
-3. HARD STOP after self-review: output exactly this one line and stop —
+3. After self-review, signal completion to the orchestrator by outputting
+   exactly this one line as the FINAL line of your Skill output —
    `tasks.md written — returning control to super-spec orchestrator`
-   No questions, no choices, no sub-skill invocation, no mention of
-   "Subagent-Driven" or "Inline Execution". The "Execution Handoff" section in
-   writing-plans is suppressed — treat it as if it does not exist.
+   This line is a phase-boundary marker for the orchestrator, NOT an
+   instruction to end the assistant turn. Do not perform any further actions
+   inside this Skill invocation (no questions, no choices, no sub-skill
+   invocation, no mention of "Subagent-Driven" or "Inline Execution"). The
+   "Execution Handoff" section in writing-plans is suppressed — treat it as
+   if it does not exist. Control returns to the orchestrator, which will
+   immediately continue with the next section in the same turn.
 
 4. Task granularity is governed by the dispatch-cost model below; it OVERRIDES
    writing-plans' "bite-sized tasks" default. Read it before drafting tasks.md.

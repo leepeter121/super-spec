@@ -4,10 +4,11 @@
 
 Use AskUserQuestion to ask:
 > "Choose mode for this change:
->  - **TDD**: write failing test first, then code (full discipline)
+>  - **TDD (Sonnet)**: write failing test first, then code (full discipline); implementer runs on Sonnet — the default, cheaper option
+>  - **TDD (Opus)**: same TDD discipline, but the implementer runs on Opus — use for harder changes where stronger implementation reasoning is worth the cost
 >  - **Simple**: skip new tests, but existing tests must still pass"
 
-Record the answer.
+Record the answer. The TDD/Simple part is the **discipline**; the parenthetical is the **implementer model**. Both `TDD (Sonnet)` and `TDD (Opus)` carry identical TDD discipline — they differ only in which model implements each Task in Phase 4.
 
 ## Derive change name
 

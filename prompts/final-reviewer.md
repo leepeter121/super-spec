@@ -25,7 +25,7 @@ You **do** read `proposal.md` here (unlike per-task reviewers) — it is your re
 3. Read `{TASKS_PATH}` to see the planned breakdown.
 4. Run `git log --oneline {COMMIT_RANGE}` to see the commit list.
 5. Run `git diff {COMMIT_RANGE}` to see the full change diff.
-6. **Invoke the `/simplify` skill** (via the Skill tool) on the diff to surface cross-task DRY and refactor opportunities.
+6. **Invoke the `/code-review` skill** (via the Skill tool, e.g. `/code-review high` — report-only). Do NOT pass `--fix` or `--comment`: a reviewer reports, it must not mutate the working tree mid-review (the orchestrator routes fixes back through revision tasks). Treat its findings — correctness bugs, reuse/DRY, and efficiency issues — as input to your verdict.
 7. Form a holistic view. Specifically check:
    - **Goal achievement**: does the change actually solve the problem stated in `proposal.md`?
    - **Design fidelity**: does the implementation match `design.md` overall?
@@ -39,7 +39,7 @@ You **do** read `proposal.md` here (unlike per-task reviewers) — it is your re
    - **Cross-task DRY**: 3 Tasks each created similar helpers that should be one?
    - **Interface coherence**: Task 2's API matches what Task 5 actually needs?
    - **Gaps**: `design.md` specifies X, but no Task implemented X?
-   - **Simplify findings**: did `/simplify` surface anything significant?
+   - **/code-review findings**: did `/code-review` surface anything significant?
    - **Mode discipline**: if Mode is TDD, are tests present and meaningful? if Simple, do existing tests still pass?
 
 ## Severity rubric
@@ -62,7 +62,7 @@ Tag every Issue you raise with one of three levels. The orchestrator routes the 
 - **[Minor]** — recorded as Notes but does NOT block APPROVED:
   - Naming, dead code, unused imports
   - Magic numbers without comment
-  - DRY opportunities flagged by `/simplify` that are clearly cosmetic or prototype-stage tech debt
+  - DRY opportunities flagged by `/code-review` that are clearly cosmetic or prototype-stage tech debt
   - Code-style inconsistency
 
 If unsure between Critical and Important, prefer Important; between Important and Minor, prefer Important.
