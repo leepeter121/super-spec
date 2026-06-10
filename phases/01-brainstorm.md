@@ -32,8 +32,19 @@ and git commits. Apply these overrides:
 5. Do NOT run `git add` / `git commit` / any state-mutating git command. The
    orchestrator owns all commits.
 
-All other steps (explore context, clarifying questions, propose approaches,
-present design, get user approval) run as normal.
+6. For the "explore context" step: delegate codebase investigation to Explore
+   subagents instead of running grep/read sweeps in this context. Dispatch via
+   the Agent tool with `subagent_type: "Explore"`, `model: "haiku"`; fire
+   independent questions as parallel dispatches in one message. Each prompt
+   must state the search breadth ("medium", or "very thorough" for wide sweeps)
+   and require the return format "conclusions + file:line references only — no
+   file content dumps". Use `model: "sonnet"` instead when the question needs
+   judgment (comparing approaches, assessing architecture) rather than locating
+   and enumerating. Reading a handful of specific files you already know the
+   paths of does NOT need delegation — this is for open-ended searches.
+
+All other steps (clarifying questions, propose approaches, present design,
+get user approval) run as normal.
 ```
 
 When brainstorming returns:
