@@ -64,10 +64,12 @@ Variables:
 - `{MODE}`: `TDD` or `Simple` — the **discipline** only. Strip any model qualifier from `proposal.md`'s `## Mode` line: both `TDD (Sonnet)` and `TDD (Opus)` map to `TDD` here.
 - `{RELEVANT_FILES}`: list of existing files this Task touches (extract from the Task body's `**Files:**` section)
 
-**Model:** read the parenthetical on `proposal.md`'s `## Mode` line:
-- `TDD (Sonnet)` → `claude-sonnet-4-6`
-- `TDD (Opus)` → `claude-opus-4-7`
+**Model:** read the parenthetical on `proposal.md`'s `## Mode` line (use Agent-tool aliases, not full model IDs — aliases track the latest version automatically):
+- `TDD (Sonnet)` → `sonnet`
+- `TDD (Opus)` → `opus`
 - `Simple` → inherit (omit the `model` parameter)
+
+**Escalation override:** if this dispatch is a re-dispatch after the **2nd consecutive FAIL** on this Task, use `opus` regardless of the Mode line (see "Model escalation on consecutive FAIL" below).
 
 **Forbidden in this prompt** (do not include):
 - Brainstorming conversation
@@ -85,7 +87,7 @@ Use the **Agent** tool. Read `prompts/task-reviewer.md` and substitute:
 - `{DESIGN_PATH}`: `openspec/changes/<name>/design.md`
 - `{TASK_BODY}`: the same Task section
 
-**Model:** `claude-sonnet-4-6`
+**Model:** `sonnet`
 
 **Forbidden:** the implementer's narrative; other Tasks' content.
 
@@ -101,6 +103,15 @@ The reviewer returns one of:
 - **Any `[Critical]` or `[Important]`** → re-dispatch the implementer (step 1) with the **full reviewer output** (including any `[Minor]` items so the implementer can address them opportunistically) appended under a `## Previous review failed with these issues` section. Track the failure count.
 
 The implementer is required to address every `[Critical]` and `[Important]` issue. `[Minor]` items are advisory — addressing them is encouraged but not gating.
+
+### Model escalation on consecutive FAIL
+
+Track consecutive FAILs per Task. The implementer model per attempt:
+
+- **1st FAIL → 2nd dispatch:** same model as the Mode line (a re-try with the reviewer report is usually enough).
+- **2nd FAIL → 3rd dispatch:** escalate the implementer to `opus` (if not already `opus`). A model stuck twice on the same blind spot rarely fixes it on the third identical attempt — one `opus` dispatch is cheaper than burning another failed round plus the human-intervention pause.
+- The task-reviewer stays on `sonnet` throughout — only the implementer escalates.
+- The escalation is per-Task and resets on the next Task. It does NOT modify `proposal.md`'s `## Mode` line.
 
 ### Recording Minor advisories
 

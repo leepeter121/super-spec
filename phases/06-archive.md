@@ -54,7 +54,7 @@ Use the **Agent** tool. Read `prompts/archive-committer.md` and substitute:
 - `{CHANGE_NAME}`: `<name>`
 - `{COMMIT_MESSAGE}`: the multi-line message from step 1b (pass verbatim, preserve newlines)
 
-**Model:** `claude-haiku-4-5-20251001`
+**Model:** `haiku`
 
 **Forbidden:** any phase conversation; reviewer reports. (`proposal.md` is allowed — already distilled into `{COMMIT_MESSAGE}`.)
 

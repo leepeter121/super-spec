@@ -9,7 +9,7 @@ Use the **Agent** tool. Read `prompts/final-reviewer.md` and substitute:
 - `{TASKS_PATH}`: `openspec/changes/<name>/tasks.md`
 - `{COMMIT_RANGE}`: `<baseline_hash>..HEAD` where baseline = the commit immediately **before** `openspec(<name>): propose`. Find with: `git log --oneline --grep="openspec(<name>): propose" --format="%H" -n 1` then `git rev-parse <hash>~1`.
 
-**Model:** `claude-opus-4-7`
+**Model:** `opus`
 
 **Forbidden:** per-task reviewer reports; implementer narratives; the brainstorming conversation.
 
