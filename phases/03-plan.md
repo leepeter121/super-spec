@@ -98,6 +98,7 @@ Delegate to a haiku Agent subagent. Stage and commit:
 
 - `openspec/changes/<name>/proposal.md`
 - `openspec/changes/<name>/design.md`
+- `openspec/changes/<name>/specs/` (all spec-delta files)
 - `openspec/changes/<name>/tasks.md`
 
 Message: `openspec(<name>): planning`

@@ -9,9 +9,9 @@ Build the PR-ready summary that the archive commit will carry. Do this before ru
 ### 1a. Gather inputs
 
 - From `proposal.md`: extract `## What`, `## Why`, `## Mode`.
-- Baseline = parent of the `openspec(<name>): propose` commit:
+- Baseline = parent of the `openspec(<name>): planning` commit:
   ```
-  BASELINE=$(git rev-parse "$(git log --grep='openspec(<name>): propose' --format='%H' -n 1)~1")
+  BASELINE=$(git rev-parse "$(git log --grep='openspec(<name>): planning' --format='%H' -n 1)~1")
   ```
 - Implementation commits: `git log "$BASELINE"..HEAD --format='%h %s' --no-merges`, excluding `openspec(<name>):` scaffolding (keep `feat`/`fix`/`refactor`/etc.).
 - Count implementation commits and tasks (from final `tasks.md`).
@@ -46,7 +46,7 @@ Store the final message as `{COMMIT_MESSAGE}` for the next step.
 openspec archive <name>
 ```
 
-This moves `openspec/changes/<name>/` into `openspec/changes/archive/` and may update `openspec/specs/`. The uncommitted `review.md` from Phase 5 gets moved along and is absorbed by step 3's `git add openspec/`.
+This moves `openspec/changes/<name>/` into `openspec/changes/archive/` and merges the change's spec deltas into `openspec/specs/` (the living spec). The uncommitted `review.md` from Phase 5 gets moved along and is absorbed by step 3's `git add openspec/`.
 
 ## 3. Dispatch the archive-committer subagent
 

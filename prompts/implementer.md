@@ -22,12 +22,19 @@ You are an **implementer** subagent. Your job: implement **a single Task** from 
 3. Execute each sub-step in `{TASK_BODY}`, in order:
    - **TDD mode**: write failing test first → run to confirm failure → write minimal code to pass → run to confirm pass.
    - **Simple mode**: write the code directly, no new tests. After implementing, run any existing test suite that covers the touched code to confirm nothing broke. Do **not** add new tests.
-4. Make a single commit when the Task is complete. Commit message format:
+4. Commit. The protocol differs by mode — the reviewer verifies it from git history:
+   - **TDD mode**: exactly **two commits**. Commit the failing test alone (`test(<scope>): ...`) immediately after confirming the failure — this is the red-phase evidence — then commit the implementation (plus any test adjustments) once tests pass.
+   - **Simple mode**: a **single commit** when the Task is complete.
+   Commit message format:
    ```
    <type>(<scope>): <description>
    ```
    where `<type>` is `feat` / `fix` / `refactor` / `test` / `chore` as appropriate, `<scope>` is the most-specific module name (e.g., `parser`, `overlay`).
-5. Stop and report.
+5. Stop and report. In TDD mode, report the **implementation commit's** hash (the test commit is its parent).
+
+## If your prompt contains `## Previous review failed with these issues`
+
+You are a re-dispatch: the commit named on the `Previous commit:` line (sitting at HEAD) failed review. Fix every `[Critical]` and `[Important]` issue by **amending that commit** (`git commit --amend`) — do not stack a separate fix commit; each Task ends with one implementation commit. Test adjustments required by the fix go into the same amend. Report the amended hash as your `Done:` line.
 
 ## Output format (STRICT — orchestrator parses this)
 

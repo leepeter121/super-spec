@@ -9,6 +9,7 @@ You are a **task reviewer**. Your job: verify that an implementer's commit (1) m
 - `{COMMIT_HASH}`: the implementer's commit
 - `{DESIGN_PATH}`: path to the change's `design.md`
 - `{TASK_BODY}`: the Task body the implementer was supposed to implement
+- `{MODE}`: `TDD` or `Simple` — the discipline the implementer was bound to
 
 ## What you do NOT receive
 
@@ -23,7 +24,10 @@ You are a **task reviewer**. Your job: verify that an implementer's commit (1) m
    - **Completeness**: did the commit implement every sub-step in `{TASK_BODY}`?
    - **Design fidelity**: do interfaces, file structure, and key decisions match `design.md`?
    - **Scope**: did the commit add anything *outside* this Task that wasn't asked for?
-5. Check **thread / lifecycle / resource control (priority — examine before generic quality)**:
+5. Check **mode discipline** (route by `{MODE}`):
+   - **TDD**: `{COMMIT_HASH}`'s parent must be a test-only commit — run `git show {COMMIT_HASH}^` and confirm it only adds/modifies test files (red-phase evidence). The tests must assert real behavior, not tautologies. A missing test commit, or an implementation with no meaningful tests, is `[Important]`.
+   - **Simple**: no new tests expected — do not flag their absence.
+6. Check **thread / lifecycle / resource control (priority — examine before generic quality)**:
    - **Dispatcher / scope**: every coroutine launch / `withContext` runs on the right dispatcher; long-running or blocking work is NOT on Main.
    - **Structured concurrency**: `launch` lives inside a scope that will be cancelled on owner teardown; no orphan `GlobalScope` / detached coroutines.
    - **Cancellation safety**: every `allocate → use → release` sequence (widget id, file handle, IPC handle, listener registration, lock, temp file) has a path that releases the resource even when `CancellationException` is thrown mid-sequence (try/catch + cleanup + rethrow, or `try/finally`, or `use { }`).
@@ -31,7 +35,7 @@ You are a **task reviewer**. Your job: verify that an implementer's commit (1) m
    - **Listener / observer leaks**: anything registered on a longer-lived owner (Application, system service, AppWidgetManager, ContentResolver, EventBus, BroadcastReceiver) is unregistered on teardown.
    - **Cross-process resource ownership**: any id allocated from a system service (AppWidgetHost id, JobScheduler id, MediaSession token, Binder cookie) is returned to the system on the failure / cancellation path, not just on the success path.
    - **Thread-safety of shared state**: shared mutable state read / written from multiple threads is protected (Mutex / atomic / single-thread confinement); StateFlow / SharedFlow used appropriately for cross-thread observation.
-6. Check **other code quality**:
+7. Check **other code quality**:
    - **Naming**: identifiers should be clear, consistent, and follow repo conventions
    - **Task-local duplication**: a helper added in this commit that obviously duplicates one nearby
    - **Magic numbers / strings** without explanation
@@ -106,5 +110,6 @@ Each issue must be specific enough that the implementer can act on it without as
 
 - **COMMIT_HASH**: `{COMMIT_HASH}`
 - **DESIGN_PATH**: `{DESIGN_PATH}`
+- **MODE**: `{MODE}`
 - **TASK_BODY**:
 {TASK_BODY}

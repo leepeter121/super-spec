@@ -5,6 +5,7 @@ Run: `openspec status --change <name> --json`. Parse, then route by detected sta
 | State | Jump to |
 |---|---|
 | no `design.md` | Phase 1 |
+| `design.md` exists, no `specs/` delta files | Phase 2 (resume at "Write spec deltas"; skip HARD-GATE B if `proposal.md` already has `## Mode`) |
 | `design.md` exists, no `tasks.md` | Phase 3 |
 | `tasks.md` exists with `- [ ]` items | Phase 4 |
 | all tasks `- [x]`, no `review.md` | Phase 5 |

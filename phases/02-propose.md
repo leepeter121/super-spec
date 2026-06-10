@@ -12,11 +12,11 @@ Record the answer. The TDD/Simple part is the **discipline**; the parenthetical 
 
 ## Derive change name
 
-From the brainstorming conversation, propose a kebab-case name (e.g., "add user auth" → `add-user-auth`). Ask the user to confirm or suggest a different name.
+If the user already supplied an explicit `<name>` in the `/super-spec <name>` invocation, use it verbatim — do not re-derive or re-confirm. Otherwise, propose a kebab-case name from the brainstorming conversation (e.g., "add user auth" → `add-user-auth`) and ask the user to confirm or suggest a different name.
 
 ## Pre-commit absorb — neutralize superpowers spec residue
 
-Before creating the change directory, clean up artifacts brainstorming may have produced despite Phase 1 overrides. Each step is a no-op if its trigger is absent.
+Before creating the change directory, clean up artifacts brainstorming may have produced despite Phase 1 overrides. Each step is a no-op if its trigger is absent. **All git commands in this section must be delegated to a haiku Agent subagent** (same rule as Phase 3's absorb) — describe the full conditional logic in the subagent prompt and have it report the result.
 
 **A. Rogue commit at HEAD.** Check `git show --name-only --format= HEAD`. If every path lies under `docs/superpowers/specs/`:
 
@@ -53,4 +53,12 @@ Path: `openspec/changes/<name>/design.md`
 
 Structure: see `templates/design.md`. Fill in from the design content delivered in the brainstorming skill's final message (no spec file exists — the design lives in the conversation).
 
-→ Continue to Phase 3. (No commit here — Phase 3 commits proposal, design, and tasks together as one planning commit.)
+## Write spec deltas
+
+Path: `openspec/changes/<name>/specs/<capability>/spec.md` — one file per affected capability.
+
+Structure: see `templates/spec-delta.md`. Derive the requirements and scenarios from the approved design: every behavior the change adds, modifies, or removes gets a `### Requirement:` with at least one `#### Scenario:`. These deltas are the change's acceptance criteria (the final-reviewer walks them) and are what `openspec archive` later merges into `openspec/specs/` — without them the archive updates nothing.
+
+After writing, run `openspec validate <name> --strict`. If validation fails, fix the deltas before continuing. (If the installed CLI version lacks this subcommand, note that and continue.)
+
+→ Continue to Phase 3. (No commit here — Phase 3 commits proposal, design, spec deltas, and tasks together as one planning commit.)

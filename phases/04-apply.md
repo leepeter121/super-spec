@@ -4,6 +4,8 @@
 
 Run **once at Phase 4 entry, before the first Task iteration**. Idempotent on resume. This is the last safe window for history rewrite — no implementation commit exists yet, so `git rebase --onto` cannot conflict on overlapping paths.
 
+**All git commands in this section must be delegated to a haiku Agent subagent** (same rule as Phase 3's absorb) — describe the full conditional logic in the subagent prompt and have it report the result. History rewrite is involved: on any rebase conflict the subagent must halt and report stderr verbatim instead of resolving or aborting on its own.
+
 If `git status --porcelain` shows uncommitted tracked changes, `git stash push --keep-index -m "super-spec phase-4-sweep"` first; `git stash pop` after the sweep.
 
 ### 0.1 File sweep
@@ -16,14 +18,14 @@ If anything exists: `rm -rf docs/superpowers/specs/ docs/superpowers/plans/` the
 
 ### 0.2 Determine baseline
 
-Baseline = the commit immediately before `openspec(<name>): propose`:
+Baseline = the commit immediately before `openspec(<name>): planning`:
 
 ```
-PROPOSE_HASH=$(git log --oneline --grep="openspec(<name>): propose" --format="%H" -n 1)
-BASELINE=$(git rev-parse "${PROPOSE_HASH}~1")
+PLANNING_HASH=$(git log --oneline --grep="openspec(<name>): planning" --format="%H" -n 1)
+BASELINE=$(git rev-parse "${PLANNING_HASH}~1")
 ```
 
-If `PROPOSE_HASH` is empty, halt and report (sweep should never run before Phase 2).
+If `PLANNING_HASH` is empty, halt and report (sweep should never run before the Phase-3 planning commit).
 
 ### 0.3 Scan baseline..HEAD for rogue commits
 
@@ -80,12 +82,17 @@ Variables:
 
 The implementer is contractually required to return one line: `Done: <commit_hash>` or `Blocked: <reason>`.
 
+### Blocked routing
+
+If the implementer returns `Blocked: <reason>`, do NOT dispatch a reviewer. Pause the workflow: surface the reason verbatim and ask the user how to proceed (e.g., adjust the design, rewrite this Task's body, skip it, intervene manually). A `Blocked` return does not count toward the consecutive-FAIL counter.
+
 ## 2. Dispatch the task-reviewer subagent
 
 Use the **Agent** tool. Read `prompts/task-reviewer.md` and substitute:
 - `{COMMIT_HASH}`: the hash from the implementer's response
 - `{DESIGN_PATH}`: `openspec/changes/<name>/design.md`
 - `{TASK_BODY}`: the same Task section
+- `{MODE}`: the same discipline flag passed to the implementer (`TDD` or `Simple`)
 
 **Model:** `sonnet`
 
@@ -100,9 +107,13 @@ The reviewer returns one of:
 ### Severity-based routing
 
 - **No `[Critical]` and no `[Important]`** → Task passes. If the reviewer surfaced any `[Minor]` items, record them per "Recording Minor advisories", then proceed to step 3 (mark complete) and step 4 (fold into the implementer commit).
-- **Any `[Critical]` or `[Important]`** → re-dispatch the implementer (step 1) with the **full reviewer output** (including any `[Minor]` items so the implementer can address them opportunistically) appended under a `## Previous review failed with these issues` section. Track the failure count.
+- **Any `[Critical]` or `[Important]`** → re-dispatch the implementer (step 1) with the **full reviewer output** (including any `[Minor]` items so the implementer can address them opportunistically) appended under a `## Previous review failed with these issues` section, plus a `Previous commit: <commit_hash>` line. The re-dispatched implementer fixes by **amending** that commit (it sits at HEAD), so each Task still ends with a single implementation commit; the amended hash becomes the new `{COMMIT_HASH}` for re-review. Track the failure count.
 
 The implementer is required to address every `[Critical]` and `[Important]` issue. `[Minor]` items are advisory — addressing them is encouraged but not gating.
+
+### Malformed reviewer output
+
+If the reviewer's output does not start with `PASS` or `FAIL`, or contradicts the severity rules (e.g., `FAIL` with only `[Minor]` items, or `PASS` listing a `[Critical]`/`[Important]`), do not silently reinterpret it: re-dispatch the task-reviewer once with a note pointing out the inconsistency. If the second output is still malformed, pause and surface both outputs to the user. Malformed rounds do not count toward the consecutive-FAIL counter.
 
 ### Model escalation on consecutive FAIL
 

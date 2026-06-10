@@ -65,6 +65,7 @@ When a phase file tells you to write an artifact, Read the matching template fir
 |---|---|
 | `proposal.md` | `templates/proposal.md` |
 | `design.md` | `templates/design.md` |
+| `specs/<capability>/spec.md` (spec delta) | `templates/spec-delta.md` |
 | `review.md` | `templates/review.md` |
 | `## Revisions` block (Recover flow) | `templates/revision-block.md` |
 
@@ -88,7 +89,7 @@ These deliver the actual isolation between phases. Apply to every Phase-4 dispat
 Documented in `README.md`. Pre-flight checks the openspec CLI binary only; plugins are not pre-checked. If a `Skill` invocation fails because a plugin is missing, output:
 
 ```
-Skill `<name>` not found. This workflow depends on the `superpowers` and `opsx` plugins.
+Skill `<name>` not found. This workflow depends on the `superpowers` plugin.
 Install via Claude Code plugin manager.
 ```
 

@@ -7,7 +7,8 @@ Use the **Agent** tool. Read `prompts/final-reviewer.md` and substitute:
 - `{PROPOSAL_PATH}`: `openspec/changes/<name>/proposal.md`
 - `{DESIGN_PATH}`: `openspec/changes/<name>/design.md`
 - `{TASKS_PATH}`: `openspec/changes/<name>/tasks.md`
-- `{COMMIT_RANGE}`: `<baseline_hash>..HEAD` where baseline = the commit immediately **before** `openspec(<name>): propose`. Find with: `git log --oneline --grep="openspec(<name>): propose" --format="%H" -n 1` then `git rev-parse <hash>~1`.
+- `{SPECS_DIR}`: `openspec/changes/<name>/specs/`
+- `{COMMIT_RANGE}`: `<baseline_hash>..HEAD` where baseline = the commit immediately **before** `openspec(<name>): planning`. Find with: `git log --oneline --grep="openspec(<name>): planning" --format="%H" -n 1` then `git rev-parse <hash>~1`.
 
 **Model:** `opus`
 

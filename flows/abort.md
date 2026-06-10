@@ -25,13 +25,13 @@ Confirm one more time (free-form: "Confirm discard? This cannot be undone for th
    ```
    git log --oneline <baseline_hash>..HEAD
    ```
-   (baseline = commit before `openspec(<name>): propose`; if propose commit no longer exists in history, ask the user for the starting point.)
+   (baseline = commit before `openspec(<name>): planning`; if the planning commit no longer exists in history, ask the user for the starting point.)
 4. Output:
    ```
    Discarded openspec/changes/<name>/.
 
    Code commits made during this change were NOT reverted:
-     <list of hashes from step 3, excluding the propose / plan / discard commits>
+     <list of hashes from step 3, excluding the planning / discard scaffolding commits>
 
    To revert them: git revert <hash> [<hash> ...]
    ```
