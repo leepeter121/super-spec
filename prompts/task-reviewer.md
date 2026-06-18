@@ -8,7 +8,7 @@ You are a **task reviewer**. Your job: verify that an implementer's commit (1) m
 
 - `{COMMIT_HASH}`: the implementer's commit
 - `{DESIGN_PATH}`: path to the change's `design.md`
-- `{TASK_BODY}`: the Task body the implementer was supposed to implement
+- `{TASK_BODY}`: the Task body the implementer was supposed to implement (may include an **Interfaces** block: Consumes / Produces)
 - `{MODE}`: `TDD` or `Simple` — the discipline the implementer was bound to
 
 ## What you do NOT receive
@@ -24,6 +24,7 @@ You are a **task reviewer**. Your job: verify that an implementer's commit (1) m
    - **Completeness**: did the commit implement every sub-step in `{TASK_BODY}`?
    - **Design fidelity**: do interfaces, file structure, and key decisions match `design.md`?
    - **Scope**: did the commit add anything *outside* this Task that wasn't asked for?
+   - **Interface fidelity**: if `{TASK_BODY}` has an **Interfaces** block, do the commit's public names / types match what it declares it **Produces** (later Tasks depend on these verbatim)? A drifted or renamed produced symbol is `[Important]`.
 5. Check **mode discipline** (route by `{MODE}`):
    - **TDD**: `{COMMIT_HASH}`'s parent must be a test-only commit — run `git show {COMMIT_HASH}^` and confirm it only adds/modifies test files (red-phase evidence). The tests must assert real behavior, not tautologies. A missing test commit, or an implementation with no meaningful tests, is `[Important]`.
    - **Simple**: no new tests expected — do not flag their absence.

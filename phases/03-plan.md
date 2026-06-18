@@ -16,10 +16,25 @@ git commits. Apply these overrides:
    Do NOT write to `docs/superpowers/plans/` or any auxiliary file there. The
    default header line about `docs/superpowers/plans/<filename>.md` does not apply.
 
-2. Do NOT run `git add` / `git commit` / any state-mutating git command. The
+2. Do NOT emit the writing-plans "Plan Document Header" block that names a
+   REQUIRED SUB-SKILL (the line telling readers to "Use
+   superpowers:subagent-driven-development / executing-plans to implement this
+   plan"). super-spec runs its OWN per-Task dispatch + review loop in Phase 4;
+   that header would point readers at the wrong execution path. You MAY keep the
+   header's "Global Constraints" block (project-wide rules copied verbatim from
+   design.md) — it is useful context for the per-Task implementer / reviewer
+   dispatches.
+
+3. Keep each Task's "Interfaces" block (Consumes / Produces) when the
+   writing-plans version emits one. super-spec dispatches each Task to a fresh
+   implementer that sees ONLY its own Task body, so the neighbouring contracts
+   in that block are exactly the context it needs — do not drop it during the
+   granularity merges below.
+
+4. Do NOT run `git add` / `git commit` / any state-mutating git command. The
    orchestrator owns all commits.
 
-3. After self-review, signal completion to the orchestrator by outputting
+5. After self-review, signal completion to the orchestrator by outputting
    exactly this one line as the FINAL line of your Skill output —
    `tasks.md written — returning control to super-spec orchestrator`
    This line is a phase-boundary marker for the orchestrator, NOT an
@@ -30,8 +45,11 @@ git commits. Apply these overrides:
    if it does not exist. Control returns to the orchestrator, which will
    immediately continue with the next section in the same turn.
 
-4. Task granularity is governed by the dispatch-cost model below; it OVERRIDES
-   writing-plans' "bite-sized tasks" default. Read it before drafting tasks.md.
+6. Task granularity is governed by the dispatch-cost model below; it OVERRIDES
+   writing-plans' granularity guidance — both its "Bite-Sized Task Granularity"
+   default and its "Task Right-Sizing" section (the latter pushes the same
+   direction as the cost model — fewer, larger tasks — but the cost model is the
+   authority here). Read it before drafting tasks.md.
 
 All other plan-writing behavior (file structure, no placeholders, self-review)
 runs as normal.

@@ -12,27 +12,38 @@ Prepend the following block to the Skill `args` (above the user's description). 
 ORCHESTRATOR OVERRIDES (super-spec skill, Phase 1):
 
 You are invoked from the super-spec workflow, which owns all artifact creation
-and git commits. Apply these overrides:
+and git commits. Apply these overrides.
 
-1. SKIP step 6 "Write design doc". Do NOT create any file under
+Steps below are identified by NAME, not number — the parenthetical numbers
+reflect the brainstorming skill's checklist as of this writing (superpowers
+6.0.x) and may drift in future versions. Match on the step's name / intent; if
+a number no longer lines up, the name wins.
+
+1. SKIP the "Write design doc" step (≈ step 6). Do NOT create any file under
    `docs/superpowers/specs/` or anywhere else. Deliver the validated design as
    plain text in your final message; the orchestrator will write design.md.
 
-2. SKIP step 7 "Spec self-review" as a file review. Run the same checks
-   (placeholder/consistency/scope/ambiguity) mentally on the in-message content
-   and fix inline before sending.
+2. SKIP the "Spec self-review" step (≈ step 7) as a file review. Run the same
+   checks (placeholder/consistency/scope/ambiguity) mentally on the in-message
+   content and fix inline before sending.
 
-3. SKIP step 8 "User reviews written spec". The orchestrator runs its own
-   approval gate (HARD-GATE A) on the in-message design. Do not ask the user
-   to review a file.
+3. SKIP the "User reviews written spec" step (≈ step 8). The orchestrator runs
+   its own approval gate (HARD-GATE A) on the in-message design. Do not ask the
+   user to review a file.
 
-4. SKIP step 9 "Transition to implementation". Do NOT invoke writing-plans or
-   any other skill. Return control to the orchestrator.
+4. SKIP the "Transition to implementation" step (≈ step 9). Do NOT invoke
+   writing-plans or any other skill. Return control to the orchestrator.
 
-5. Do NOT run `git add` / `git commit` / any state-mutating git command. The
+5. SKIP the "Offer the visual companion" step (≈ step 2). Do NOT offer or open
+   the browser-based Visual Companion and do NOT start the brainstorm server.
+   This is an orchestrated, non-interactive brainstorm — keep the entire
+   exchange in the terminal. If a question would read better shown than told,
+   describe it in text (ASCII sketch / bullet comparison) instead.
+
+6. Do NOT run `git add` / `git commit` / any state-mutating git command. The
    orchestrator owns all commits.
 
-6. For the "explore context" step: delegate codebase investigation to Explore
+7. For the "explore context" step: delegate codebase investigation to Explore
    subagents instead of running grep/read sweeps in this context. Dispatch via
    the Agent tool with `subagent_type: "Explore"`, `model: "haiku"`; fire
    independent questions as parallel dispatches in one message. Each prompt
