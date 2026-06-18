@@ -60,7 +60,43 @@ Use the **Agent** tool. Read `prompts/archive-committer.md` and substitute:
 
 The subagent stages the archive file moves with `git add openspec/` and commits using `{COMMIT_MESSAGE}` verbatim.
 
-## 4. STOP
+## 4. Squash all commits since baseline
+
+Delegate to a **haiku** Agent subagent. Include the standard CLAUDE.md delegating preamble, then:
+
+```
+你是被主 session 委派的子代理，可以直接用 Bash 執行 git 命令，不需要再往下委派。
+```
+
+Subagent job:
+
+1. Locate the baseline:
+   ```
+   PLANNING_HASH=$(git log --oneline --grep="openspec(<name>): planning" --format="%H" -n 1)
+   BASELINE=$(git rev-parse "${PLANNING_HASH}~1")
+   ```
+2. Count commits: `COUNT=$(git rev-list --count "$BASELINE"..HEAD)`
+3. If `COUNT` ≤ 1, output `Skipped: only 1 commit since baseline` and stop.
+4. Soft-reset to baseline (keeps all changes staged):
+   ```
+   git reset --soft "$BASELINE"
+   ```
+5. Re-commit with `{COMMIT_MESSAGE}` verbatim (use a heredoc):
+   ```
+   git commit -m "$(cat <<'CMEOF'
+   {COMMIT_MESSAGE}
+   CMEOF
+   )"
+   ```
+6. Output: `Done: <new_commit_hash> (squashed <COUNT> commits)`
+
+On any git failure, report stderr verbatim and halt — no `restore`/`reset --hard`/hook-bypass recovery.
+
+Before dispatching, substitute in the subagent prompt:
+- Every `<name>` → the actual change name (same name used in steps 2 and 3).
+- `{COMMIT_MESSAGE}` → the exact multi-line message from step 1b.
+
+## 5. STOP
 
 Do not merge. Do not push. Do not open a PR.
 
