@@ -1,5 +1,7 @@
 # Phase 2 — Propose
 
+> **Todo:** mark `Phase 2 · Write proposal & spec deltas` `in_progress` (see `flows/todo-tracking.md`). It stays `in_progress` through HARD-GATE B — mode selection is a user gate.
+
 ## HARD-GATE B — Mode Selection
 
 Use AskUserQuestion to ask:
@@ -61,4 +63,4 @@ Structure: see `templates/spec-delta.md`. Derive the requirements and scenarios 
 
 After writing, run `openspec validate <name> --strict`. If validation fails, fix the deltas before continuing. (If the installed CLI version lacks this subcommand, note that and continue.)
 
-→ Continue to Phase 3. (No commit here — Phase 3 commits proposal, design, spec deltas, and tasks together as one planning commit.)
+→ **Todo:** mark `Phase 2 · Write proposal & spec deltas` `completed`. Continue to Phase 3. (No commit here — Phase 3 commits proposal, design, spec deltas, and tasks together as one planning commit.)

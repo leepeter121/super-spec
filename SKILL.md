@@ -26,10 +26,11 @@ This file is an **index only** — all phase, flow, and template content lives i
 User runs `/super-spec [<name | short description>]`.
 
 1. **Read `flows/pre-flight.md` and execute it.** Halt on any failure.
-2. Then decide based on argument:
-   - **No argument** → ask: "What change do you want to work on? Describe what to build or fix."
-   - **`<name>` matches existing `openspec/changes/<name>/`** → **Read `flows/resume-detection.md` and execute it**, then jump to the phase it indicates.
-   - **`<name>` is new, or only a description was given** → enter Phase 1 (Read `phases/01-brainstorm.md`).
+2. Then determine the **entry phase** based on argument:
+   - **No argument** → ask: "What change do you want to work on? Describe what to build or fix." (entry phase = Phase 1 once they answer)
+   - **`<name>` matches existing `openspec/changes/<name>/`** → **Read `flows/resume-detection.md` and execute it** to determine the entry phase.
+   - **`<name>` is new, or only a description was given** → entry phase = Phase 1.
+3. **Read `flows/todo-tracking.md` and initialize the visualized todo list** for the determined entry phase. Then enter that phase (Read its `phases/0N-*.md`).
 
 ---
 
@@ -53,6 +54,7 @@ Enter only when the trigger fires; Read the file and execute it.
 | Trigger | Action |
 |---|---|
 | Every invocation start (mandatory) | Read `flows/pre-flight.md`. |
+| Entry phase determined — initialize/refresh the visualized todo list (mandatory) | Read `flows/todo-tracking.md`. |
 | Resuming an existing change | Read `flows/resume-detection.md`. |
 | Phase 5 verdict = `NEEDS DESIGN UPDATE` | Read `flows/recover.md`. |
 | User says "abort" / "stop this change" | Read `flows/abort.md`. |

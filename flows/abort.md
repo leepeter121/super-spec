@@ -9,6 +9,8 @@ Use AskUserQuestion:
 
 ## pause
 
+> **Todo:** leave the list untouched — its `in_progress` item records where you stopped (see `flows/todo-tracking.md`).
+
 Output:
 ```
 Paused <name>. Resume with /super-spec <name>.
@@ -18,6 +20,8 @@ Stop.
 ## discard
 
 Confirm one more time (free-form: "Confirm discard? This cannot be undone for the openspec artifacts."). On confirmation:
+
+> **Todo:** clear the list — `TaskList` then `TaskUpdate` every item to `status: deleted`; the change no longer exists (see `flows/todo-tracking.md`).
 
 1. `rm -rf openspec/changes/<name>/`
 2. Commit: `openspec(<name>): discard`

@@ -1,5 +1,7 @@
 # Phase 6 — Archive
 
+> **Todo:** mark `Phase 6 · Archive` `in_progress` (see `flows/todo-tracking.md`); mark it `completed` at the STOP step.
+
 Only enter when the user gives an explicit "archive" instruction after `APPROVED`.
 
 ## 1. Compose the archive commit message
@@ -97,6 +99,8 @@ Before dispatching, substitute in the subagent prompt:
 - `{COMMIT_MESSAGE}` → the exact multi-line message from step 1b.
 
 ## 5. STOP
+
+> **Todo:** mark `Phase 6 · Archive` `completed` — all items are now done.
 
 Do not merge. Do not push. Do not open a PR.
 

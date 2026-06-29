@@ -1,5 +1,7 @@
 # Phase 4 — Apply
 
+> **Todo:** at Phase 4 entry, rewrite the list from Shape A to **Shape B** — expand `Phase 4 · Apply tasks` into one `Phase 4 · Task N: <title>` item per Task in `tasks.md`, with already-`- [x]` Tasks marked `completed` (see `flows/todo-tracking.md`). Do this once, after the sweep below and before the Task loop.
+
 ## 0. Phase-entry sweep — purge superpowers artifacts (idempotent)
 
 Run **once at Phase 4 entry, before the first Task iteration**. Idempotent on resume. This is the last safe window for history rewrite — no implementation commit exists yet, so `git rebase --onto` cannot conflict on overlapping paths.
@@ -54,6 +56,8 @@ Loop over each Task in `tasks.md` that is not yet complete (`- [ ]` at the Task 
 For each Task, do steps 1 → 4 in order.
 
 ## 1. Dispatch the implementer subagent
+
+> **Todo:** mark this Task's `Phase 4 · Task N` item `in_progress` before dispatching. Re-dispatches and FAIL rounds keep it `in_progress`.
 
 Use the **Agent** tool (not Skill — we need fresh-context isolation).
 
@@ -136,6 +140,8 @@ After the **3rd consecutive FAIL** on the same Task, **pause** the workflow:
 - Wait for user direction
 
 ## 3. Mark Task complete
+
+> **Todo:** after flipping the checkboxes below, mark this Task's `Phase 4 · Task N` item `completed`.
 
 Use the Edit tool to flip `- [ ]` → `- [x]` for:
 - Each sub-step under this Task (if not already done by the implementer)

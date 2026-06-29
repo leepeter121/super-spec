@@ -4,6 +4,8 @@ Triggered when the final-reviewer (Phase 5) returns `VERDICT: NEEDS DESIGN UPDAT
 
 ## Steps
 
+> **Todo:** this flow adds a revision round. When step 4 regenerates `tasks.md` with `### Revision N - Task M:` blocks, append a `Phase 4 · Revision N Task M: <title>` item (`pending`) per new Task and set `Phase 5 · Final review` back to `pending` (see `flows/todo-tracking.md`).
+
 1. Append to `openspec/changes/<name>/design.md` per `templates/revision-block.md`. (N = next integer; first revision = 1.)
 
 2. If the revision changes requirements, update the affected `specs/<capability>/spec.md` deltas to match (same structure as `templates/spec-delta.md`).

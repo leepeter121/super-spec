@@ -1,5 +1,7 @@
 # Phase 1 — Brainstorm
 
+> **Todo:** mark `Phase 1 · Brainstorm design` `in_progress` (see `flows/todo-tracking.md`). It stays `in_progress` through HARD-GATE A — design approval is a user gate, not completion.
+
 **Do not write any artifact files in this phase.**
 
 Invoke `superpowers:brainstorming` via the Skill tool. Pass through the user's initial description (if any).
@@ -76,4 +78,4 @@ git log -1 --format="%H %s"
 
 If any file appeared under `docs/superpowers/specs/` or HEAD looks like a rogue brainstorming commit (subject starts with `docs:` and touches only `docs/superpowers/specs/`), do NOT clean up here — Phase 2's pre-commit absorb step will handle it. Just note the situation and continue.
 
-→ Continue to Phase 2.
+→ **Todo:** mark `Phase 1 · Brainstorm design` `completed`. Continue to Phase 2.

@@ -1,5 +1,7 @@
 # Phase 3 — Plan
 
+> **Todo:** mark `Phase 3 · Plan tasks` `in_progress` (see `flows/todo-tracking.md`).
+
 Invoke `superpowers:writing-plans` via the Skill tool.
 
 ## ORCHESTRATOR OVERRIDES — include verbatim in the Skill `args`
@@ -123,4 +125,4 @@ Message: `openspec(<name>): planning`
 
 This is the only commit from Phases 2–3 combined. If `proposal.md` or `design.md` were already committed in a prior session, only `tasks.md` stages — fine; the prior commit stays.
 
-→ Continue to Phase 4.
+→ **Todo:** mark `Phase 3 · Plan tasks` `completed`. Continue to Phase 4 (which rewrites the list into per-Task items — see `flows/todo-tracking.md`).

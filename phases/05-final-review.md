@@ -1,5 +1,7 @@
 # Phase 5 — Final Review
 
+> **Todo:** mark `Phase 5 · Final review` `in_progress` (see `flows/todo-tracking.md`).
+
 Dispatch the final-reviewer subagent.
 
 Use the **Agent** tool. Read `prompts/final-reviewer.md` and substitute:
@@ -41,8 +43,8 @@ Write `review.md` to disk but **do NOT commit it here**. It stays uncommitted in
 
 ## Route by verdict
 
-- **APPROVED** → Show user the verdict (including any `## Notes` `[Minor]` items). Wait for the user's explicit "archive" instruction. Do NOT auto-archive.
+- **APPROVED** → **Todo:** mark `Phase 5 · Final review` `completed`; leave `Phase 6 · Archive` `pending` (see `flows/todo-tracking.md`). Show user the verdict (including any `## Notes` `[Minor]` items). Wait for the user's explicit "archive" instruction. Do NOT auto-archive.
 - **CHANGES REQUESTED** → Use AskUserQuestion: "Reviewer requested changes. Add revision tasks now?"
-  - `yes` → append `### Revision N - Task M:` blocks to `tasks.md` addressing every `[Critical]` and `[Important]` issue (omit `[Minor]` from revision tasks; they're recorded but not gating), commit `openspec(<name>): revision N tasks`, then loop back to Phase 4 for the new tasks only
+  - `yes` → append `### Revision N - Task M:` blocks to `tasks.md` addressing every `[Critical]` and `[Important]` issue (omit `[Minor]` from revision tasks; they're recorded but not gating), commit `openspec(<name>): revision N tasks`, then loop back to Phase 4 for the new tasks only. **Todo:** append a `Phase 4 · Revision N Task M: <title>` item (`pending`) per new Task and set `Phase 5 · Final review` back to `pending`.
   - `no` → pause; user can resume later
 - **NEEDS DESIGN UPDATE** → Jump to `flows/recover.md`
