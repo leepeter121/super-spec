@@ -10,35 +10,52 @@ Build the PR-ready summary that the archive commit will carry. Do this before ru
 
 ### 1a. Gather inputs
 
-- From `proposal.md`: extract `## What`, `## Why`, `## Mode`.
+Step 4 squashes **all** implementation commits into this one commit, so the message must describe **what was actually delivered** — the delivered commits are the PRIMARY source, not the plan.
+
 - Baseline = parent of the `openspec(<name>): planning` commit:
   ```
   BASELINE=$(git rev-parse "$(git log --grep='openspec(<name>): planning' --format='%H' -n 1)~1")
   ```
-- Implementation commits: `git log "$BASELINE"..HEAD --format='%h %s' --no-merges`, excluding `openspec(<name>):` scaffolding (keep `feat`/`fix`/`refactor`/etc.).
-- Count implementation commits and tasks (from final `tasks.md`).
+- **Implementation commits (PRIMARY source — read subject AND body, not just subject):**
+  ```
+  git log "$BASELINE"..HEAD --format='%h %s%n%b%n---' --no-merges
+  ```
+  Exclude `openspec(<name>):` scaffolding (planning / final-review commits); keep `feat`/`fix`/`refactor`/`perf`/etc. These commit messages are what you condense the title and Key changes from.
+- From `proposal.md`: extract `## Why` and `## Mode` only. `## Why` seeds the `Why:` line; `## Mode` seeds the footer. **Do NOT source `What`/title from `proposal.md`** — the plan may have drifted from what shipped; describe the delivery.
+- Count implementation commits (`M`) and tasks (from final `tasks.md`, `N`).
 - Confirm `review.md` verdict = `APPROVED`.
 
-### 1b. Build the message (HARD CAP: 15 lines total, including blanks)
+### 1b. Build the message (HARD CAP: 16 lines total, including blanks)
 
-Use this exact structure:
+#### Title — derive from the delivered commits, do NOT hardcode
+
+The squashed commit **is the feature delivery** (all the `feat`/`fix`/`refactor` code, not just the openspec file moves), so its title must read like the feature — not like a `chore`. Compose `<type>(<scope>): <subject>` from the implementation commits gathered in 1a:
+
+- **type**: the single Conventional Commit type that best represents the whole delivery. Priority: any new user-facing capability → `feat`; else predominantly bug fixes → `fix`; else restructuring → `refactor`; else the dominant type (`perf`/etc.).
+- **scope**: the module/area touched by most of the diff (e.g. `classswift`, `annotation`, `app`). Omit the scope if the work genuinely spans many modules with no dominant one.
+- **subject**: a Traditional Chinese phrase (≤ ~60 chars) distilling *what shipped*, condensed from the implementation commit subjects — not copied from one commit, and not from `proposal.md`.
+
+**Fallback (docs/spec-only changes):** if 1a found **no** substantive implementation commits (only `openspec`/`docs` scaffolding, so step 4 will skip the squash), the commit really is just an archive — title it `chore(openspec): archive <name>` and skip the `Key changes` block.
+
+#### Structure
 
 ```
-chore(openspec): archive <name>
+<type>(<scope>): <subject distilled from delivered commits>
 
-<one or two sentences distilled from proposal ## What>
+<one or two sentences condensed from the actual implementation commits — what shipped>
 
-Why: <one sentence from proposal ## Why>
+Why: <one sentence (may draw from proposal ## Why)>
 
 Key changes:
-- <bullet summarizing key implementation area 1>
-- <bullet summarizing key implementation area 2>
-- <bullet summarizing key implementation area 3>
+- <bullet condensed from the delivered commits, area 1>
+- <bullet condensed from the delivered commits, area 2>
+- <bullet condensed from the delivered commits, area 3>
 
+Archive: openspec/changes/<name>
 Mode: <TDD (Sonnet)|TDD (Opus)|Simple> · Tasks: <N> · Commits: <M> · Review: APPROVED
 ```
 
-Bullet rules: 3 ideal (max 4), ≤ 80 chars each, lead with a verb, group by area not 1:1 to commits. If the message exceeds the 15-line cap, tighten What/Why/bullets — never drop the `Mode: ...` line.
+Body rules: condense from the commit subjects+bodies read in 1a (group by area, **not** 1:1 to commits). Bullets: 3 ideal (max 4), ≤ 80 chars each, lead with a verb. Note any intentionally-skipped tasks in one extra line if relevant. If the message exceeds the 16-line cap, tighten the What/Why/bullets — never drop the `Archive:` or `Mode: ...` lines.
 
 Store the final message as `{COMMIT_MESSAGE}` for the next step.
 
@@ -58,7 +75,7 @@ Use the **Agent** tool. Read `prompts/archive-committer.md` and substitute:
 
 **Model:** `haiku`
 
-**Forbidden:** any phase conversation; reviewer reports. (`proposal.md` is allowed — already distilled into `{COMMIT_MESSAGE}`.)
+**Forbidden:** any phase conversation; reviewer reports; `proposal.md`. Everything the subagent needs is already condensed into `{COMMIT_MESSAGE}` — it must not re-derive or edit the message.
 
 The subagent stages the archive file moves with `git add openspec/` and commits using `{COMMIT_MESSAGE}` verbatim.
 

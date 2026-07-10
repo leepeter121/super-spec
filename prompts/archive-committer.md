@@ -11,7 +11,7 @@ You are a **minimal-context** subagent dispatched to write a single archive comm
 
 ## What you do NOT receive
 
-(In addition to the preamble's withheld list: `design.md`, `tasks.md`, `review.md` content; reviewer reports; any phase conversation. You also do not receive raw `proposal.md` — its distilled summary is already inside `{COMMIT_MESSAGE}`.)
+(In addition to the preamble's withheld list: `design.md`, `tasks.md`, `review.md` content; reviewer reports; any phase conversation. You also do not receive raw `proposal.md` or the implementation commit log — the orchestrator has already condensed them into `{COMMIT_MESSAGE}`.)
 
 ## Your job
 

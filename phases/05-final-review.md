@@ -41,7 +41,7 @@ Path: `openspec/changes/<name>/review.md`
 
 Structure: see `templates/review.md`. Fill in `Verdict`, `Summary` (from reviewer), and the relevant body section (severity-tagged).
 
-Write `review.md` to disk but **do NOT commit it here**. It stays uncommitted in the working tree; Phase 6's archive-committer absorbs it into the single `chore(openspec): archive <name>` commit alongside the archived file moves. This keeps the branch from accumulating a stand-alone `openspec(<name>): final review` scaffolding commit when no further code changes follow.
+Write `review.md` to disk but **do NOT commit it here**. It stays uncommitted in the working tree; Phase 6's archive-committer absorbs it into the single squashed archive commit alongside the archived file moves. This keeps the branch from accumulating a stand-alone `openspec(<name>): final review` scaffolding commit when no further code changes follow.
 
 (Exception — `CHANGES REQUESTED` path: the `openspec(<name>): revision N tasks` commit described below remains as a separate commit because it precedes new feat work and acts as the planning commit for the revision round.)
 
