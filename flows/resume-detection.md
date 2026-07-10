@@ -20,6 +20,7 @@ Announce: `Resuming <name> at <phase>.`
 Resuming into a phase means **entering that phase** — not skipping past its entry steps. Notably:
 
 - Resuming into Phase 4 runs the **Phase-4 entry sweep** (`phases/04-apply.md` section 0). The sweep is idempotent: a no-op when no superpowers artifacts/commits remain, and the right thing to do otherwise.
+- Resuming into Phase 4 also re-runs the **Engine routing** step: if `proposal.md` has `## Engine: ultracode`, follow `flows/ultracode-apply.md` after the sweep. Cross-session there is **no** `resumeFromRunId` (it is same-session-only) — launch a **fresh** Workflow run with args rebuilt from the remaining `- [ ]` Tasks in `tasks.md`. This is always safe: git + tasks.md are the truth source; only the journal cache is lost.
 - Resuming into Phase 5 dispatches the final-reviewer fresh (the prior dispatch's output is not preserved).
 
 Do not try to be clever and skip the entry steps "because we already ran them last time". Re-run them.

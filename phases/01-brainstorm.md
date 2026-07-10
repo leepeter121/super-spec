@@ -60,6 +60,10 @@ All other steps (clarifying questions, propose approaches, present design,
 get user approval) run as normal.
 ```
 
+## Engine mention during brainstorming
+
+If at any point the user says they want this change run with **ultracode** / the Workflow engine, record that fact (no file writes). It becomes the **default answer** at Phase 2's HARD-GATE B2 — never a silent enablement; the gate still shows the agent-model table for confirmation.
+
 When brainstorming returns:
 
 ## HARD-GATE A — Design Approved

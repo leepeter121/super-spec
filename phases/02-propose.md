@@ -12,6 +12,30 @@ Use AskUserQuestion to ask:
 
 Record the answer. The TDD/Simple part is the **discipline**; the parenthetical is the **implementer model**. Both `TDD (Sonnet)` and `TDD (Opus)` carry identical TDD discipline — they differ only in which model implements each Task in Phase 4.
 
+## HARD-GATE B2 — Engine Selection
+
+Immediately after the mode answer, settle the **execution engine** (orthogonal to mode — mode is discipline × implementer model; engine is *how Phase 4 dispatches*).
+
+**Determine the default:**
+- Invocation had `--ultra`, OR the user explicitly asked for ultracode/Workflow during Phase 1 (see `phases/01-brainstorm.md`) → default = `ultracode`.
+- Otherwise → default = `native`.
+- **Override:** if pre-flight's check 4 announced the Workflow tool unavailable, the default is `native` regardless of the above (this precedence resolves the two rules; the gate still offers `ultracode` — the choice persists in `proposal.md` and simply falls back to native at Phase 4 entry in sessions where the tool is missing).
+
+**Derive the agent-model table automatically** — it follows super-spec's existing assignment logic and is NOT a user choice (the engine splits the work across agents; models stay governed by Mode):
+- `implementer`: from the Mode parenthetical — `TDD (Sonnet)` → `sonnet`, `TDD (Opus)` → `opus`, `Simple` → `inherit`
+- `implementer (3rd dispatch after 2 consecutive FAILs)`: `opus` (fixed escalation rule)
+- `task-reviewer`: `sonnet` (fixed)
+- `git-ops (checkbox fold-in / amend)`: `haiku` (fixed)
+
+**Ask** (use AskUserQuestion; put the default first):
+> "Choose execution engine for Phase 4:
+>  - **native**: orchestrator dispatches each Task's implementer/reviewer one by one (current behavior, the default)
+>  - **ultracode**: the Task loop runs as a deterministic Workflow script that splits the work — one fresh implementer + reviewer agent per Task from tasks.md; severity routing, FAIL counting, and model escalation become code paths; supports journal-based resume. Dispatch count (and cost) is roughly the same as native. Agent models (auto-derived from Mode): <show the derived table>"
+
+Even when the default is `ultracode` (pre-answered via `--ultra` or Phase 1), still show the derived model table in the question — cost/model transparency is not skippable. Do NOT silently enable ultracode from session state alone.
+
+Record the engine answer; the derived table is written into `proposal.md` below.
+
 ## Derive change name
 
 If the user already supplied an explicit `<name>` in the `/super-spec <name>` invocation, use it verbatim — do not re-derive or re-confirm. Otherwise, propose a kebab-case name from the brainstorming conversation (e.g., "add user auth" → `add-user-auth`) and ask the user to confirm or suggest a different name.
@@ -47,7 +71,7 @@ Run: `openspec new change <name>`
 
 Path: `openspec/changes/<name>/proposal.md`
 
-Structure: see `templates/proposal.md`. Fill in `## What` and `## Why` from the brainstorming conversation; set `## Mode` to the choice from HARD-GATE B.
+Structure: see `templates/proposal.md`. Fill in `## What` and `## Why` from the brainstorming conversation; set `## Mode` to the choice from HARD-GATE B; set `## Engine` to the choice from HARD-GATE B2. When Engine is `ultracode`, also write the `## Ultracode Agent Models` table (as confirmed/overridden at the gate); when `native`, omit that table entirely.
 
 ## Write `design.md`
 

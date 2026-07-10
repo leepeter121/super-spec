@@ -23,7 +23,9 @@ This file is an **index only** — all phase, flow, and template content lives i
 
 ## Invocation
 
-User runs `/super-spec [<name | short description>]`.
+User runs `/super-spec [--ultra] [<name | short description>]`.
+
+- **`--ultra` flag** (optional, position-independent): pre-answers Phase 2's HARD-GATE B2 with the `ultracode` engine — the gate still shows the agent-model table for confirmation; it is never silently skipped. Strip the flag before interpreting the remaining argument as `<name | description>`.
 
 1. **Read `flows/pre-flight.md` and execute it.** Halt on any failure.
 2. Then determine the **entry phase** based on argument:
@@ -56,6 +58,7 @@ Enter only when the trigger fires; Read the file and execute it.
 | Every invocation start (mandatory) | Read `flows/pre-flight.md`. |
 | Entry phase determined — initialize/refresh the visualized todo list (mandatory) | Read `flows/todo-tracking.md`. |
 | Resuming an existing change | Read `flows/resume-detection.md`. |
+| Phase 4 entry with `proposal.md` `## Engine: ultracode` (after the section-0 sweep) | Read `flows/ultracode-apply.md`. |
 | Phase 5 verdict = `NEEDS DESIGN UPDATE` | Read `flows/recover.md`. |
 | User says "abort" / "stop this change" | Read `flows/abort.md`. |
 

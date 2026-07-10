@@ -35,6 +35,17 @@ Tracked files have uncommitted changes. Please commit, stash, or discard them be
 <output of `git status --short --untracked-files=no`>
 ```
 
+## 4. `--ultra` flag → Workflow tool availability (conditional)
+
+Only when the invocation included `--ultra`: check whether the **Workflow** tool is available in the current toolset. If it is not, announce:
+
+```
+Workflow tool unavailable in this session — the ultracode engine cannot run.
+HARD-GATE B2 will default to native (you can still pick ultracode for a later session; the choice persists in proposal.md).
+```
+
+and continue (do **not** halt). This is a soft check — the authoritative fallback happens again at Phase 4 entry (`flows/ultracode-apply.md` step 1).
+
 ## Branch policy
 
 Do **NOT** check the current branch. Do **NOT** create a new branch. All commits go on the current branch.

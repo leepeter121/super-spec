@@ -11,12 +11,13 @@ All artifacts live in `openspec/changes/<name>/`. Defaults: TDD mode is offered,
 ## Trigger
 
 ```
-/super-spec [<name | short description>]
+/super-spec [--ultra] [<name | short description>]
 ```
 
 - No argument → asks what you want to build
 - New `<name>` → starts at brainstorm
 - Existing `<name>` → resumes from current state
+- `--ultra` → pre-answers the Phase-2 engine gate with `ultracode` (see "Execution engines" below)
 
 ## Dependencies
 
@@ -54,7 +55,10 @@ super-spec/
 │   ├── pre-flight.md
 │   ├── resume-detection.md
 │   ├── recover.md                # NEEDS DESIGN UPDATE loop
+│   ├── ultracode-apply.md        # Phase 4 via Workflow engine (orchestrator side)
 │   └── abort.md
+├── workflows/
+│   └── apply.js                  # static Workflow script for the ultracode Phase-4 Task loop
 ├── prompts/                      # subagent prompt templates
 │   ├── _isolation-preamble.md    # shared by every prompt below
 │   ├── implementer.md
@@ -85,6 +89,19 @@ Model parameters use Agent-tool **aliases** (`sonnet` / `opus` / `haiku`), not p
 | task-reviewer | `sonnet` |
 | final-reviewer | `opus` |
 | archive-committer | `haiku` |
+
+With the **ultracode** engine, the same assignments apply: the table above is auto-derived at HARD-GATE B2, persisted as `## Ultracode Agent Models` in `proposal.md`, and read into the Workflow args — `workflows/apply.js` hardcodes no model names.
+
+## Execution engines (Phase 4)
+
+Chosen per change at Phase 2's **HARD-GATE B2**, persisted as `## Engine` in `proposal.md` (resume never re-asks and never depends on session state):
+
+| Engine | How Phase 4 runs |
+|---|---|
+| `native` (default) | The orchestrator dispatches each Task's implementer/reviewer one by one — current behavior. |
+| `ultracode` | The Task loop runs as one deterministic Workflow script (`workflows/apply.js`): the script splits the work — one fresh implementer + reviewer agent per Task from `tasks.md` — and severity routing / FAIL counting / model escalation are code paths. Structured (schema) outputs replace the `Done:`/`PASS`/`FAIL` string contracts; journal-based resume within a session. User gates (Blocked, 3-FAIL cap) surface as workflow pauses routed back to the orchestrator. |
+
+Ways to enable ultracode: the `--ultra` flag, answering the gate, or asking for it during brainstorming (flips the gate's default). Resume reads `## Engine` from `proposal.md`. Ground rules: git + `tasks.md` remain the only truth source (the workflow journal is cache); the Phase-4 sweep and every history rewrite stay orchestrator-side; Phases 1–3, 5, 6 are unchanged in v1. Details: `flows/ultracode-apply.md`.
 
 ## Design principles
 

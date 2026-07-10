@@ -49,6 +49,13 @@ Drops one commit and replays the rest onto its parent. No conflict risk: any lat
 
 ---
 
+## Engine routing (after the sweep, before the Task loop)
+
+Read `## Engine` from `openspec/changes/<name>/proposal.md`:
+
+- **`ultracode`** → Read `flows/ultracode-apply.md` and execute it **instead of** the Task loop below (steps 1–5 are the native path; do not run them). The section-0 sweep above runs in BOTH engines — it is orchestrator-side and never moves inside a Workflow.
+- **`native` or the section is absent** (changes created before engines existed) → continue with the Task loop below.
+
 ## Task loop
 
 Loop over each Task in `tasks.md` that is not yet complete (`- [ ]` at the Task header level).
