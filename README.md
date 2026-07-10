@@ -54,6 +54,7 @@ super-spec/
 ├── flows/                        # non-linear paths
 │   ├── pre-flight.md
 │   ├── resume-detection.md
+│   ├── phase4-sweep.md           # Phase-4 entry sweep (superpowers residue purge, both engines)
 │   ├── recover.md                # NEEDS DESIGN UPDATE loop
 │   ├── ultracode-apply.md        # Phase 4 via Workflow engine (orchestrator side)
 │   ├── ultracode-review.md       # Phase 5 multi-lens panel (orchestrator side)

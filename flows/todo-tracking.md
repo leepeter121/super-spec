@@ -70,7 +70,7 @@ Update individual items at each boundary the phase files point back to here for.
 
 - **Enter a phase** → mark its item `in_progress`. (In Phase 4, this means the current Task item.)
 - **Leave a phase** (the `→ Continue to Phase N` line) → mark its item `completed`.
-- **Phase 4 entry** (`phases/04-apply.md` section 0, before the Task loop) → rewrite the list from Shape A to **Shape B**: `TaskUpdate` the `Phase 4 · Apply tasks` placeholder to `status: deleted`, then `TaskCreate` one `Phase 4 · Task N: <title>` item per Task. Tasks already `- [x]` in `tasks.md` get `TaskUpdate`d to `completed`.
+- **Phase 4 entry** (`phases/04-apply.md`, after the entry sweep and before the Task loop) → rewrite the list from Shape A to **Shape B**: `TaskUpdate` the `Phase 4 · Apply tasks` placeholder to `status: deleted`, then `TaskCreate` one `Phase 4 · Task N: <title>` item per Task. Tasks already `- [x]` in `tasks.md` get `TaskUpdate`d to `completed`.
 - **Phase 4, per Task**: mark the Task item `in_progress` at dispatch (step 1); mark it `completed` only when the Task is flipped to `- [x]` in `tasks.md` (step 3). Re-dispatches and FAIL rounds keep it `in_progress` — the work isn't done yet.
 
 ---

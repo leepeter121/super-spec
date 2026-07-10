@@ -58,7 +58,8 @@ Enter only when the trigger fires; Read the file and execute it.
 | Every invocation start (mandatory) | Read `flows/pre-flight.md`. |
 | Entry phase determined — initialize/refresh the visualized todo list (mandatory) | Read `flows/todo-tracking.md`. |
 | Resuming an existing change | Read `flows/resume-detection.md`. |
-| Phase 4 entry with `proposal.md` `## Engine: ultracode` (after the section-0 sweep) | Read `flows/ultracode-apply.md`. |
+| Phase 4 entry (once, both engines — before Engine routing) | Read `flows/phase4-sweep.md`. |
+| Phase 4 entry with `proposal.md` `## Engine: ultracode` (after the entry sweep) | Read `flows/ultracode-apply.md`. |
 | Phase 5 entry with `## Engine: ultracode` AND panel threshold met | Read `flows/ultracode-review.md`. |
 | Phase 5 verdict = `NEEDS DESIGN UPDATE` | Read `flows/recover.md`. |
 | User says "abort" / "stop this change" | Read `flows/abort.md`. |

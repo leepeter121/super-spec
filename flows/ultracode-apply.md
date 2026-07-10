@@ -1,6 +1,6 @@
 # Ultracode Apply flow — Phase 4 以 Workflow script 執行
 
-**進入條件**：Phase 4 entry，且 `proposal.md` 的 `## Engine` 為 `ultracode`，且 `phases/04-apply.md` 的 section 0 sweep **已在 orchestrator 側跑完**（sweep 含歷史重寫，永遠不進 Workflow）。
+**進入條件**：Phase 4 entry，且 `proposal.md` 的 `## Engine` 為 `ultracode`，且 `flows/phase4-sweep.md` 的 entry sweep **已在 orchestrator 側跑完**（sweep 含歷史重寫，永遠不進 Workflow）。
 
 **授權聲明**：使用者已在 HARD-GATE B2 選擇 ultracode engine（落盤於 `proposal.md`），此即 Workflow 工具的合法 opt-in——啟動 Workflow 前**不需**再次向使用者確認，不論當下訊息是否含 "ultracode" 關鍵字。
 

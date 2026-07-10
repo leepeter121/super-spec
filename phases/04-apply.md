@@ -2,50 +2,9 @@
 
 > **Todo:** at Phase 4 entry, rewrite the list from Shape A to **Shape B** — expand `Phase 4 · Apply tasks` into one `Phase 4 · Task N: <title>` item per Task in `tasks.md`, with already-`- [x]` Tasks marked `completed` (see `flows/todo-tracking.md`). Do this once, after the sweep below and before the Task loop.
 
-## 0. Phase-entry sweep — purge superpowers artifacts (idempotent)
+## 0. Phase-entry sweep (once, at entry only)
 
-Run **once at Phase 4 entry, before the first Task iteration**. Idempotent on resume. This is the last safe window for history rewrite — no implementation commit exists yet, so `git rebase --onto` cannot conflict on overlapping paths.
-
-**All git commands in this section must be delegated to a haiku Agent subagent** (same rule as Phase 3's absorb) — describe the full conditional logic in the subagent prompt and have it report the result. History rewrite is involved: on any rebase conflict the subagent must halt and report stderr verbatim instead of resolving or aborting on its own.
-
-If `git status --porcelain` shows uncommitted tracked changes, `git stash push --keep-index -m "super-spec phase-4-sweep"` first; `git stash pop` after the sweep.
-
-### 0.1 File sweep
-
-```
-ls docs/superpowers/specs/ docs/superpowers/plans/ 2>/dev/null
-```
-
-If anything exists: `rm -rf docs/superpowers/specs/ docs/superpowers/plans/` then `rmdir docs/superpowers 2>/dev/null` (only if empty).
-
-### 0.2 Determine baseline
-
-Baseline = the commit immediately before `openspec(<name>): planning`:
-
-```
-PLANNING_HASH=$(git log --oneline --grep="openspec(<name>): planning" --format="%H" -n 1)
-BASELINE=$(git rev-parse "${PLANNING_HASH}~1")
-```
-
-If `PLANNING_HASH` is empty, halt and report (sweep should never run before the Phase-3 planning commit).
-
-### 0.3 Scan baseline..HEAD for rogue commits
-
-For each commit in `git log --format="%H" "$BASELINE"..HEAD`, mark it **rogue** if **every** path under `git show --name-only --format= "$HASH"` lies inside `docs/superpowers/specs/` or `docs/superpowers/plans/`. Build the rogue list oldest → newest.
-
-### 0.4 Drop rogue commits via rebase
-
-For each rogue hash (oldest first):
-
-```
-git rebase --onto "${HASH}^" "$HASH" HEAD
-```
-
-Drops one commit and replays the rest onto its parent. No conflict risk: any later commit touching `docs/superpowers/...` would itself be rogue and excluded from the replay set. After each rebase HEAD shifts, so re-scan `$BASELINE..HEAD` and repeat until no rogues remain.
-
-### 0.5 Final verification
-
-`git log "$BASELINE"..HEAD --format="%H %s"` and `ls docs/superpowers/ 2>/dev/null` must show zero `docs:` rogue subjects and no `docs/superpowers/` directory. Otherwise halt and report.
+**Only at Phase 4 entry** (fresh or resumed — not on per-Task re-Reads of this file): Read `flows/phase4-sweep.md` and execute it — it purges superpowers artifacts and may rewrite history, so it runs orchestrator-side in BOTH engines, before anything else in this phase. If this Read happens at the top of a Task iteration (the sweep already ran at entry), skip straight to the Task loop below.
 
 ---
 
@@ -53,7 +12,7 @@ Drops one commit and replays the rest onto its parent. No conflict risk: any lat
 
 Read `## Engine` from `openspec/changes/<name>/proposal.md`:
 
-- **`ultracode`** → Read `flows/ultracode-apply.md` and execute it **instead of** the Task loop below (steps 1–5 are the native path; do not run them). The section-0 sweep above runs in BOTH engines — it is orchestrator-side and never moves inside a Workflow.
+- **`ultracode`** → Read `flows/ultracode-apply.md` and execute it **instead of** the Task loop below (steps 1–5 are the native path; do not run them).
 - **`native` or the section is absent** (changes created before engines existed) → continue with the Task loop below.
 
 ## Task loop
