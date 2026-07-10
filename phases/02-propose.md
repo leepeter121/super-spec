@@ -26,6 +26,7 @@ Immediately after the mode answer, settle the **execution engine** (orthogonal t
 - `implementer (3rd dispatch after 2 consecutive FAILs)`: `opus` (fixed escalation rule)
 - `task-reviewer`: `sonnet` (fixed)
 - `git-ops (checkbox fold-in / amend)`: `haiku` (fixed)
+- Phase-5 panel roles (used only when the panel threshold in `flows/ultracode-review.md` is met): `final-lens ×3` = `sonnet`, `final-reviewer (holistic lens / sole reviewer)` = `opus`, `final-skeptic` = `sonnet`, `final-judge` = `sonnet` (all fixed)
 
 **Ask** (use AskUserQuestion; put the default first):
 > "Choose execution engine for Phase 4:

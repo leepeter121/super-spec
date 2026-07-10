@@ -25,3 +25,7 @@
 | implementer — 3rd dispatch after 2 consecutive FAILs | opus | fixed escalation rule (04-apply.md) |
 | task-reviewer | sonnet | fixed |
 | git-ops (checkbox fold-in / amend) | haiku | fixed |
+| final-lens ×3 (Phase-5 panel, above threshold only) | sonnet | fixed |
+| final-reviewer — holistic lens (panel) / sole reviewer (below threshold) | opus | fixed |
+| final-skeptic ×2 per gating issue (panel) | sonnet | fixed |
+| final-judge (panel, compose-only) | sonnet | fixed |

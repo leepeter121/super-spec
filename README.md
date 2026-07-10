@@ -56,14 +56,21 @@ super-spec/
 │   ├── resume-detection.md
 │   ├── recover.md                # NEEDS DESIGN UPDATE loop
 │   ├── ultracode-apply.md        # Phase 4 via Workflow engine (orchestrator side)
+│   ├── ultracode-review.md       # Phase 5 multi-lens panel (orchestrator side)
 │   └── abort.md
 ├── workflows/
-│   └── apply.js                  # static Workflow script for the ultracode Phase-4 Task loop
+│   ├── apply.js                  # static Workflow script for the ultracode Phase-4 Task loop
+│   └── final-review.js           # static Workflow script for the Phase-5 panel
 ├── prompts/                      # subagent prompt templates
 │   ├── _isolation-preamble.md    # shared by every prompt below
 │   ├── implementer.md
 │   ├── task-reviewer.md          # single per-task reviewer: spec compliance + code quality
-│   ├── final-reviewer.md
+│   ├── final-reviewer.md         # sole reviewer (native / below threshold); holistic lens (panel)
+│   ├── final-lens-spec.md        # panel lens: spec-scenario walking
+│   ├── final-lens-lifecycle.md   # panel lens: resource/lifecycle/threading
+│   ├── final-lens-coherence.md   # panel lens: cross-task DRY / interface / gaps
+│   ├── final-skeptic.md          # panel: adversarial verify of one gating issue
+│   ├── final-judge.md            # panel: compose-only (verdict is read-only input)
 │   └── archive-committer.md
 ├── templates/                    # artifact structures
 │   ├── proposal.md
@@ -99,7 +106,7 @@ Chosen per change at Phase 2's **HARD-GATE B2**, persisted as `## Engine` in `pr
 | Engine | How Phase 4 runs |
 |---|---|
 | `native` (default) | The orchestrator dispatches each Task's implementer/reviewer one by one — current behavior. |
-| `ultracode` | The Task loop runs as one deterministic Workflow script (`workflows/apply.js`): the script splits the work — one fresh implementer + reviewer agent per Task from `tasks.md` — and severity routing / FAIL counting / model escalation are code paths. Structured (schema) outputs replace the `Done:`/`PASS`/`FAIL` string contracts; journal-based resume within a session. User gates (Blocked, 3-FAIL cap) surface as workflow pauses routed back to the orchestrator. |
+| `ultracode` | The Task loop runs as one deterministic Workflow script (`workflows/apply.js`): the script splits the work — one fresh implementer + reviewer agent per Task from `tasks.md` — and severity routing / FAIL counting / model escalation are code paths. Structured (schema) outputs replace the `Done:`/`PASS`/`FAIL` string contracts; journal-based resume within a session. User gates (Blocked, 3-FAIL cap) surface as workflow pauses routed back to the orchestrator. **Phase 5**: above a size threshold (≥ 4 Tasks or ≥ 800 diff lines), the final review upgrades to a multi-lens panel (`workflows/final-review.js`): 3 sonnet lenses + the opus holistic reviewer in parallel → 2 skeptics vote on every Critical/Important candidate (downgraded items stay in Notes with their original severity) → the VERDICT is computed by the script, a compose-only judge writes the prose. Below threshold, Phase 5 stays single-reviewer. Read-only — a dead panel run is simply re-run. |
 
 Ways to enable ultracode: the `--ultra` flag, answering the gate, or asking for it during brainstorming (flips the gate's default). Resume reads `## Engine` from `proposal.md`. Ground rules: git + `tasks.md` remain the only truth source (the workflow journal is cache); the Phase-4 sweep and every history rewrite stay orchestrator-side; Phases 1–3, 5, 6 are unchanged in v1. Details: `flows/ultracode-apply.md`.
 
