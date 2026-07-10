@@ -2,6 +2,10 @@
 
 > **Todo:** mark `Phase 5 · Final review` `in_progress` (see `flows/todo-tracking.md`).
 
+## Engine routing
+
+Read `## Engine` from `openspec/changes/<name>/proposal.md`. If `ultracode` **and** the panel size threshold is met (defined in `flows/ultracode-review.md` §1) → Read `flows/ultracode-review.md` and execute it **instead of** the single-reviewer dispatch below (rejoin this file at "Route by verdict"). Otherwise (native, absent, or below threshold) → continue below.
+
 Dispatch the final-reviewer subagent.
 
 Use the **Agent** tool. Read `prompts/final-reviewer.md` and substitute:
