@@ -16,9 +16,10 @@ export const meta = {
 //   mode        : 'TDD' | 'Simple'（純 discipline）
 //   commitRange : string — <baseline>..HEAD（推導方式同 phases/05-final-review.md）
 //   paths       : { proposal, design, tasks, specsDir }
-//   models      : { lens: 'sonnet', holistic: 'opus', skeptic: 'sonnet', judge: 'sonnet' }
-//                 ← 來源是 proposal.md 的 ## Ultracode Agent Models 表（缺列時用
-//                   flows/ultracode-review.md 規定的預設值），非本檔
+//   models      : { lens, holistic, skeptic, judge } — Agent-tool aliases
+//                 ← 唯一權威是 proposal.md 的 ## Ultracode Agent Models 表（缺
+//                   panel 列時用 flows/ultracode-review.md §3 的預設值）；本檔
+//                   不記具體值，避免第三份副本漂移
 //   templates   : {
 //     isolationPreamble : prompts/_isolation-preamble.md 全文（逐字）,
 //     lensSpec          : prompts/final-lens-spec.md 全文,
